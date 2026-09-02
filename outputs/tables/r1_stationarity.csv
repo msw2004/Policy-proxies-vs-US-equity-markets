@@ -1,0 +1,76 @@
+market,asset,series,n,adf_p,kpss_p,verdict
+fed_sep2026_no_change,TLT,p_level,74,0.3343735165398051,0.027828668944480807,unit root
+fed_sep2026_no_change,TLT,dp,74,3.51249641644665e-17,0.1,stationary
+fed_sep2026_no_change,TLT,ret_TLT,74,3.9296818652668215e-09,0.1,stationary
+fed_sep2026_no_change,XLF,p_level,74,0.3343735165398051,0.027828668944480807,unit root
+fed_sep2026_no_change,XLF,dp,74,3.51249641644665e-17,0.1,stationary
+fed_sep2026_no_change,XLF,ret_XLF,74,5.413451632138261e-16,0.1,stationary
+fed_sep2026_no_change,SPY,p_level,74,0.3343735165398051,0.027828668944480807,unit root
+fed_sep2026_no_change,SPY,dp,74,3.51249641644665e-17,0.1,stationary
+fed_sep2026_no_change,SPY,ret_SPY,74,3.813758542903681e-05,0.1,stationary
+fed_sep2026_no_change,XLI,p_level,74,0.3343735165398051,0.027828668944480807,unit root
+fed_sep2026_no_change,XLI,dp,74,3.51249641644665e-17,0.1,stationary
+fed_sep2026_no_change,XLI,ret_XLI,74,5.289900719874726e-17,0.1,stationary
+fed_sep2026_no_change,VIXY,p_level,74,0.3343735165398051,0.027828668944480807,unit root
+fed_sep2026_no_change,VIXY,dp,74,3.51249641644665e-17,0.1,stationary
+fed_sep2026_no_change,VIXY,ret_VIXY,74,7.303436917328276e-13,0.1,stationary
+fed_sep2026_hike25,TLT,p_level,75,0.5338182818276176,0.01,unit root
+fed_sep2026_hike25,TLT,dp,75,1.1455931296010703e-12,0.1,stationary
+fed_sep2026_hike25,TLT,ret_TLT,75,1.4777580116068255e-09,0.1,stationary
+fed_sep2026_hike25,XLF,p_level,75,0.5338182818276176,0.01,unit root
+fed_sep2026_hike25,XLF,dp,75,1.1455931296010703e-12,0.1,stationary
+fed_sep2026_hike25,XLF,ret_XLF,75,7.501015987433746e-16,0.1,stationary
+fed_sep2026_hike25,SPY,p_level,75,0.5338182818276176,0.01,unit root
+fed_sep2026_hike25,SPY,dp,75,1.1455931296010703e-12,0.1,stationary
+fed_sep2026_hike25,SPY,ret_SPY,75,1.1066602517210865e-15,0.1,stationary
+fed_sep2026_hike25,XLI,p_level,75,0.5338182818276176,0.01,unit root
+fed_sep2026_hike25,XLI,dp,75,1.1455931296010703e-12,0.1,stationary
+fed_sep2026_hike25,XLI,ret_XLI,75,1.3130722042429704e-16,0.1,stationary
+fed_sep2026_hike25,VIXY,p_level,75,0.5338182818276176,0.01,unit root
+fed_sep2026_hike25,VIXY,dp,75,1.1455931296010703e-12,0.1,stationary
+fed_sep2026_hike25,VIXY,ret_VIXY,75,1.1861140883612314e-12,0.1,stationary
+fed_hike_2026,TLT,p_level,162,0.9456328032076101,0.01,unit root
+fed_hike_2026,TLT,dp,162,9.723630094604368e-11,0.1,stationary
+fed_hike_2026,TLT,ret_TLT,162,5.560051396110931e-27,0.1,stationary
+fed_hike_2026,XLF,p_level,162,0.9456328032076101,0.01,unit root
+fed_hike_2026,XLF,dp,162,9.723630094604368e-11,0.1,stationary
+fed_hike_2026,XLF,ret_XLF,162,5.9189114910677425e-15,0.1,stationary
+fed_hike_2026,SPY,p_level,162,0.9456328032076101,0.01,unit root
+fed_hike_2026,SPY,dp,162,9.723630094604368e-11,0.1,stationary
+fed_hike_2026,SPY,ret_SPY,162,1.8824258091739295e-27,0.1,stationary
+fed_hike_2026,XLI,p_level,162,0.9456328032076101,0.01,unit root
+fed_hike_2026,XLI,dp,162,9.723630094604368e-11,0.1,stationary
+fed_hike_2026,XLI,ret_XLI,162,1.0169210833948094e-28,0.1,stationary
+fed_hike_2026,VIXY,p_level,162,0.9456328032076101,0.01,unit root
+fed_hike_2026,VIXY,dp,162,9.723630094604368e-11,0.1,stationary
+fed_hike_2026,VIXY,ret_VIXY,162,8.65751289691258e-22,0.1,stationary
+us_recession_2026,SPY,p_level,202,0.8170896856248658,0.01,unit root
+us_recession_2026,SPY,dp,202,2.285571718252554e-30,0.1,stationary
+us_recession_2026,SPY,ret_SPY,202,2.5588544631315866e-12,0.1,stationary
+us_recession_2026,XLI,p_level,202,0.8170896856248658,0.01,unit root
+us_recession_2026,XLI,dp,202,2.285571718252554e-30,0.1,stationary
+us_recession_2026,XLI,ret_XLI,202,4.043410805948855e-24,0.1,stationary
+us_recession_2026,XLF,p_level,202,0.8170896856248658,0.01,unit root
+us_recession_2026,XLF,dp,202,2.285571718252554e-30,0.1,stationary
+us_recession_2026,XLF,ret_XLF,202,1.315048279674865e-18,0.1,stationary
+us_recession_2026,TLT,p_level,202,0.8170896856248658,0.01,unit root
+us_recession_2026,TLT,dp,202,2.285571718252554e-30,0.1,stationary
+us_recession_2026,TLT,ret_TLT,202,7.486447433567854e-29,0.1,stationary
+us_recession_2026,VIXY,p_level,202,0.8170896856248658,0.01,unit root
+us_recession_2026,VIXY,dp,202,2.285571718252554e-30,0.1,stationary
+us_recession_2026,VIXY,ret_VIXY,202,1.9973911320523188e-23,0.1,stationary
+korea_trade_deal_2027,XLI,p_level,186,1.0186730144722803e-05,0.1,stationary
+korea_trade_deal_2027,XLI,dp,186,1.5712313861086823e-29,0.1,stationary
+korea_trade_deal_2027,XLI,ret_XLI,186,5.370888560086246e-21,0.1,stationary
+korea_trade_deal_2027,SPY,p_level,186,1.0186730144722803e-05,0.1,stationary
+korea_trade_deal_2027,SPY,dp,186,1.5712313861086823e-29,0.1,stationary
+korea_trade_deal_2027,SPY,ret_SPY,186,2.205243630497247e-28,0.1,stationary
+us_debt_default_2027,TLT,p_level,194,0.0005471735680601793,0.01,ambiguous
+us_debt_default_2027,TLT,dp,194,2.25113987825444e-17,0.1,stationary
+us_debt_default_2027,TLT,ret_TLT,194,2.452662286439736e-28,0.1,stationary
+us_debt_default_2027,SPY,p_level,194,0.0005471735680601793,0.01,ambiguous
+us_debt_default_2027,SPY,dp,194,2.25113987825444e-17,0.1,stationary
+us_debt_default_2027,SPY,ret_SPY,194,2.4197386809142817e-26,0.1,stationary
+us_debt_default_2027,VIXY,p_level,194,0.0005471735680601793,0.01,ambiguous
+us_debt_default_2027,VIXY,dp,194,2.25113987825444e-17,0.1,stationary
+us_debt_default_2027,VIXY,ret_VIXY,194,2.472268914198825e-21,0.1,stationary

@@ -1,0 +1,13 @@
+# analysis
+pandas>=2.2
+numpy>=1.26
+scipy>=1.11
+statsmodels>=0.14
+matplotlib>=3.8
+
+# live data refresh only (not needed to reproduce from the committed snapshots)
+requests>=2.31
+yfinance>=0.2.40
+
+# tests
+pytest>=8.0

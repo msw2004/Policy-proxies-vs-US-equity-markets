@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.ipynb_checkpoints/
+.DS_Store
+
+# ETF bars are vendor data - fetched, not redistributed
+data/raw/prices/*.csv
