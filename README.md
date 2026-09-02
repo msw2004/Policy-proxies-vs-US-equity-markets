@@ -1,7 +1,6 @@
 # Do prediction markets say anything usable about US equities?
 
-**Release 1** of a four-release study on quantitative proxies for public leaning on US
-fiscal, monetary and trade policy. This release covers the prediction-market strand:
+**Release 1** covers the prediction-market strand:
 Polymarket implied probabilities against US equity and rates ETFs.
 
 The short answer: **they co-move, sharply and with the right signs — but they do not
@@ -154,15 +153,6 @@ this repository.
 - **Prediction-market bars post-date the close**, so no same-day result establishes direction.
 - **3–9 events per contract** with overlapping windows: the CAR tests have almost no power either way.
 - **Two contracts are very thin** and behave accordingly.
-
-## The other three releases
-
-Release 2 adds the Baker/Bloom/Davis news-based EPU index and its categorical
-sub-indices; Release 3 turns raw probabilities into economically meaningful factors and
-tests a composite policy-uncertainty index against forward realised volatility, with a
-circular-shift placebo; Release 4 re-estimates the same specification on the
-Baker–Bloom–Davis–Kost EMV tracker's ~400 months and asks what a 250-day sample could
-ever have detected.
 
 ## Licence
 
