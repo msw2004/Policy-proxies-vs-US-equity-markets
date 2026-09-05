@@ -1,35 +1,35 @@
-# What prediction markets and policy news can tell us about US equities
+# Prediction markets, policy news, and US equities
 
 This repository contains Releases 1 to 3 of a four-part study of quantitative proxies
 for public views on US fiscal, monetary, and trade policy.
 
-- **Release 1** examines the prediction market strand by comparing Polymarket implied
-  probabilities with US equity and rates ETFs, on 250 trading days.
-- **Release 2** puts the same questions to the Baker, Bloom, and Davis news-based
-  Economic Policy Uncertainty index and its categorical sub-indices, first on Release
-  1's own window and then on the full 1993 to 2026 sample.
-- **Release 3** converts the raw probabilities into economically meaningful factors,
-  builds a composite policy uncertainty index from them, and tests whether it improves
-  a forward volatility forecast.
+- Release 1 compares Polymarket implied probabilities with US equity and rates ETFs
+  over 250 trading days.
+- Release 2 applies the same tests to the Baker, Bloom, and Davis news-based Economic
+  Policy Uncertainty index and its categorical sub-indices. It uses both the Release 1
+  window and the full sample from 1993 to 2026.
+- Release 3 converts raw probabilities into interpretable factors, combines them in a
+  composite policy uncertainty index, and tests whether the index improves forecasts
+  of future volatility.
 
 Release 1 finds that prediction market probabilities and market prices often move
-together on the same day, with directions that match theory, but that the daily data
-cannot establish which market moves first. Release 2 explains why that result is shaped
-the way it is. On eleven months, EPU also finds nothing. On four hundred months, the
-same measure and the same specification produce eleven significant relationships. The
-limiting factor in Release 1 is the length of the window, not the choice of proxy.
+together on the same day, in directions consistent with theory. The daily data do not
+show which market moves first. Release 2 helps explain that limitation. Its regressions
+find no FDR-significant relationship in the eleven-month window, but the same measure
+and specification produce eleven significant relationships over roughly 400 months.
+This comparison suggests that sample length limits Release 1 more than the choice of
+proxy does.
 
-Release 3 finds nothing either, and is the most useful of the three about *why*. Its
-first version reported a strong result that turned out to be a shared time trend,
-validated by a placebo that a deterministic ramp also passes, on a grid with no
-multiplicity correction, from an aggregate that is 82% one contract. The corrected
-analysis reports zero surviving cells out of fifteen. What survives the exercise is the
-set of checks, not the finding.
+Release 3 also reports a null result. An earlier version appeared to find a strong
+relationship, but the signal was a shared time trend. The placebo test also accepted a
+deterministic ramp, the grid had no multiplicity correction, and one contract supplied
+82% of the aggregate weight. After correcting those problems, none of the 15 cells is
+significant. The value of this release lies in documenting the checks that overturned
+the initial result.
 
-**Every quantitative claim below has been through an adversarial re-check that
-recomputed it independently.** Three of those re-checks changed a conclusion. Where a
-number here differs from an earlier draft, the earlier one was wrong and the section
-says so.
+Every quantitative claim below was recomputed independently during an adversarial
+review. Three of those checks changed a conclusion. When a number differs from an
+earlier draft, the relevant section explains the correction.
 
 ---
 
@@ -107,8 +107,8 @@ visible.
 # Release 2: news-based policy uncertainty
 
 Release 2 replaces the prediction market proxy with the Baker, Bloom, and Davis
-news-based EPU index and asks the same questions of it. The finding is the contrast
-between two windows, so both are estimated and reported side by side.
+news-based EPU index and repeats the analysis. Results are reported for two windows
+because the difference between them is central to the interpretation.
 
 ## What was tested
 
@@ -123,11 +123,11 @@ targets were used, and each is labelled by kind:
 | next month absolute return | forward |
 | forward 12-month realised volatility (log) | forward |
 
-The kind is load-bearing. A trailing 12-month volatility at month *t* is a function of
+This distinction matters. A trailing 12-month volatility at month *t* is a function of
 returns from *t-11* to *t*, so regressing it on EPU at month *t* is a contemporaneous
 statement with eleven months of backward overlap. It is not a forecast, however large
-the R² looks. The forward twin is carried in the same table so the difference stays
-visible rather than being left to the reader.
+the R² looks. The corresponding forward measure appears in the same table so readers
+can compare the two directly.
 
 Eight regressors were used: levels and log differences of the headline index and of the
 three categorical sub-indices that FRED publishes, `EPUMONETARY`, `EPUTRADE`, and
@@ -140,20 +140,19 @@ as `(none published)` rather than silently reassigning them.
 
 ## Results
 
-### 1. The daily strand is reported as unavailable
+### 1. Daily analysis was unavailable
 
-The daily EPU series could not be retrieved in the environment that produced these
-results. The retrieval channel truncates `All_Daily_Policy_Data.csv` at roughly 2,900
-rows, which ends in mid-1992, so no observation overlaps the price window. The release
-reports this as unavailable rather than substituting the monthly series and calling it
-a daily result. On a networked machine, `python -m pmeq.datasets refresh` fills the
-file in and the code picks it up automatically.
+The environment used for these results could not retrieve the daily EPU series. The
+retrieval channel truncates `All_Daily_Policy_Data.csv` at roughly 2,900 rows, ending
+in mid-1992, so none of the observations overlaps the price window. The daily result is
+therefore marked unavailable. On a networked machine, `python -m pmeq.datasets
+refresh` downloads the file and the code detects it automatically.
 
-### 2. On Release 1's window, EPU finds nothing either
+### 2. No adjusted associations in the Release 1 window
 
 Restricted to the months Release 1 estimates on, 24 of the 40 regression cells are even
-estimable, the largest sample is 11 months, and **no cell survives FDR correction at
-10%**. The largest absolute t-statistic is 2.64.
+estimable, the largest sample is 11 months, and no cell survives FDR correction at 10%.
+The largest absolute t-statistic is 2.64.
 
 The window is defined as the span of the price panel, which is what Release 1 actually
 estimates on. It is not the union of the contracts' quote dates. That union starts
@@ -161,7 +160,7 @@ eight months earlier, because one contract quotes from 2025-01 while Release 1 e
 it from the correlation work, so using it would compare against months Release 1 never
 sees.
 
-### 3. On the full sample, the same measure works
+### 3. Full-sample associations
 
 | Target | Regressor | n | β | t (HAC) | R² |
 |---|---|--:|--:|--:|--:|
@@ -172,15 +171,14 @@ sees.
 | next month absolute return | log EPU monetary | 401 | 0.0082 | 3.31 | 0.037 |
 | trailing 12m realised vol (log) | log EPU | 390 | 0.3295 | 3.01 | 0.136 |
 
-Across 389 to 402 months, **11 of 40 cells survive FDR at 10%**. The relationships are
+Across 389 to 402 months, 11 of 40 cells survive FDR at 10%. The relationships are
 modest, with R² between 0.01 and 0.14, and the strongest of them are the overlapping
 volatility targets whose kind is contemporaneous rather than forward.
 
 ### 4. Could eleven months have found what four hundred months finds?
 
-This is the question the release is built to answer. Taking each full-sample R² as the
-true effect size and asking what power an eleven-month sample would have had against
-it:
+Power was estimated by treating each full-sample R² as the true effect size and asking
+how often an eleven-month sample would detect it:
 
 | Measure | Median power |
 |---|---:|
@@ -192,10 +190,10 @@ Only 8 of the 11 cells are estimable on the short window at all. The three trail
 12-month volatility targets are not, because a target built from a twelve-month window
 cannot be estimated on eleven months of data.
 
-A median power of 0.01 against the screen actually applied means a null result on this
-window carries almost no information. Release 1's nulls are consistent with there being
-nothing to find, and equally consistent with there being exactly what the full sample
-shows.
+A median power of 0.01 against the screen actually applied means that a null result in
+this window carries almost no information. At that power, the short-window results
+cannot distinguish no relationship from effects of the size observed in the full
+sample.
 
 ### 5. Do the two proxies measure the same thing?
 
@@ -217,32 +215,36 @@ what one would expect from that.
 
 # Release 3: from raw probabilities to a policy-uncertainty index
 
-Release 1's weakness is that a raw probability has no stable economic meaning. A market
-at 0.90 and a market at 0.10 are both *confident*; a market at 0.50 is maximally
-*uncertain*. Correlating the level with returns mixes two different objects.
+Raw contract probabilities do not have a consistent interpretation as uncertainty. A
+market at 0.90 and one at 0.10 both express confidence, while a market at 0.50 is
+maximally uncertain. Regressing probability levels on returns therefore mixes
+direction with uncertainty.
 
-Release 3 maps each contract onto factors that do have a reading — logit level, binary
-entropy (how unresolved the question is), flow (`|Δ logit p|`, how much news arrived),
-and drift — aggregates them by traded volume with a cross-sectional dispersion term, and
-combines them into an equal-weighted composite (CPUI). The composite has no fitted
-parameters, so it cannot be accused of being tuned to the sample it is tested on. The
-target is the market's *risk level* — realised volatility over the next 5, 10 or 21
-days — because direction is close to unforecastable and risk is what policy uncertainty
-should plausibly move.
+Release 3 derives four factors from each contract: logit level, binary entropy (how
+unresolved the question is), flow (`|Δ logit p|`, a measure of incoming news), and
+drift. It aggregates the factors by trading volume, adds a cross-sectional dispersion
+term, and combines them in an equal-weighted composite called CPUI. The composite has
+no fitted parameters or sample-fitted weights. The targets are realised volatility
+over the next 5, 10, and 21 days. Policy uncertainty is more likely to affect market
+risk than the direction of returns, which is difficult to forecast.
 
-**The result is null. The interesting part is what it took to establish that.**
+The corrected result is null. Reaching it required identifying several problems in an
+earlier specification.
 
 ## The first version of this release was wrong
 
-It reported that aggregate entropy adds 8.9% to R² at five days with a placebo p of
-0.004, and called it a hypothesis worth carrying forward. An adversarial re-check found
-five defects, every one of which pushed in the direction of a more impressive result:
+The earlier version reported that aggregate entropy added 8.9% to R² at five days,
+with a placebo p-value of 0.004, and described it as a hypothesis worth pursuing. An
+adversarial review found five problems. Each one made the initial result look stronger
+than the corrected result.
 
-**The signal is a time trend.** `agg_entropy` correlates **+0.84 with elapsed time**
-over the selected window and fails an ADF test. The volatility baseline
-(trailing RV, VIXY, |return|) spans no trend, so the index was being paid for
-reproducing a drift. Adding a linear time index to the baseline removes 85–99% of every
-increment:
+### Shared time trend
+
+`agg_entropy` correlates +0.84 with elapsed time over the selected window and fails an
+ADF test. The volatility baseline contains trailing realised volatility, VIXY, and
+absolute return, but no time trend. The index was therefore capturing drift that the
+baseline did not model. Adding a linear time index removes 94% to 100% of the apparent
+incremental R²:
 
 | Horizon | Signal | ΔR² without trend | ΔR² with trend | share from trend | t without | t with |
 |---|---|--:|--:|--:|--:|--:|
@@ -251,71 +253,80 @@ increment:
 | 21 | agg_entropy | 0.1928 | 0.0022 | 99% | 3.21 | 0.24 |
 | 21 | CPUI | 0.0382 | 0.0000 | 100% | 1.87 | 0.04 |
 
-**The placebo could not have caught it.** Circularly shifting a *trending* signal
-creates a sawtooth with a discontinuity at the wrap point, which is a worse regressor
-than the original — so the null sits too low and the test over-rejects. A deterministic
-ramp passes it at every horizon; independent random walks passed at roughly 19% against
-a nominal 10%. This is why the trend belongs in the baseline rather than being left for
-the placebo to police, and a test now asserts the hole is closed.
+### Placebo failure under a trending signal
 
-**`p = 0.004` was not achievable by the design.** There are only ~145 distinct circular
-shifts on a 160-day panel, so 500 random draws mostly repeat, and the resolution of the
-test is 1/145 ≈ 0.007. The placebo now **enumerates every distinct shift** and reports
-an exact p-value using `(r+1)/(m+1)` — which, unlike `(null >= obs).mean()`, can never
-return the 0.000 that the old construction-robustness table published.
+Circularly shifting a trending signal creates a sawtooth with a discontinuity at the
+wrap point. This makes the shifted series a worse regressor than the original, places
+the null distribution too low, and causes the test to reject too often. A deterministic
+ramp passes the old test at every horizon. Independent random walks passed about 19%
+of the time against a nominal 10% threshold. The corrected model includes the trend in
+the baseline, and a guardrail test checks that this failure does not recur.
 
-**Fifteen cells, no multiplicity correction** — while Releases 1 and 2 both correct
-across their grids. BH-FDR is applied here now. The signal sets overlap (CPUI and
-entropy+flow both contain agg_entropy), and positive dependence is exactly the case
-BH is valid and conservative under, so the correction is if anything too gentle.
+### An unattainable reported p-value
 
-**The "volume-weighted aggregate across policy domains" is one contract.**
+The original p-value of 0.004 was outside the resolution of the design. A 160-day panel
+has only about 145 distinct circular shifts, so 500 random draws mostly repeat the same
+shifts. The test resolution is about 1/145, or 0.007. The placebo now enumerates every
+distinct shift and calculates the exact p-value as `(r+1)/(m+1)`. This construction
+cannot produce the 0.000 previously shown in the construction robustness table.
+
+### No correction for multiple tests
+
+The earlier analysis tested 15 cells without a multiplicity correction, although
+Releases 1 and 2 correct across their grids. Release 3 now applies BH-FDR. The signal
+sets overlap because CPUI and entropy plus flow both contain `agg_entropy`. BH remains
+valid and conservative under this type of positive dependence.
+
+### An aggregate dominated by one contract
 
 | Contract | Volume (USD) | Weight | corr with the aggregate |
 |---|---:|--:|--:|
-| Fed rate hike in 2026 | 8,206,364 | 0.821 | **0.993** |
+| Fed rate hike in 2026 | 8,206,364 | 0.821 | 0.993 |
 | US recession by end-2026 | 1,717,659 | 0.172 | −0.619 |
-| US–Korea trade deal | 59,657 | 0.006 | −0.007 |
+| US-Korea trade deal | 59,657 | 0.006 | −0.007 |
 | US debt default by 2027 | 16,228 | 0.002 | −0.300 |
 
-The aggregate *is* `fed_hike_2026`, whose probability walks monotonically toward 0.5
-across the window — which is where the trend comes from. The other three carry 18% of
-the weight between them and two of them are decorative.
+The `fed_hike_2026` contract has 82.1% of the weight and a 0.993 correlation with the
+aggregate. Its probability moves steadily toward 0.5 during the window, which produces
+the trend. The other three contracts share the remaining 18% of the weight, and two
+have negligible weights.
 
 ## What the corrected analysis finds
 
-Nothing. With the trend controlled, the bandwidth matched to the forecast overlap, the
-null enumerated and the grid FDR-corrected:
-
-**0 of 15 cells survive at 10%, before correction as well as after.** The smallest raw
-placebo p across the grid is 0.31. The composite index adds 0.02% to R² at 21 days
-against a null whose 10% critical value is 3.45%.
+After controlling for trend, matching the bandwidth to the forecast overlap,
+enumerating the null, and applying FDR correction, none of the 15 cells is significant
+at 10%, either before or after correction. The smallest raw placebo p-value in the grid
+is 0.31. At 21 days, the composite index adds 0.0006% to R², while the null
+distribution has a 10% critical value of 3.45%.
 
 ![Release 3 placebo](outputs/figures/f5_placebo.png)
 
-The index itself, with the roster shown beneath it so a level move cannot be confused
-with a change in membership:
+The CPUI figure shows the contract roster beneath the index so that a change in
+membership is not mistaken for a change in the index level.
 
 ![CPUI](outputs/figures/f6_cpui.png)
 
-## Two things the release does report
+## Sensitivity checks
 
-**The panel-selection constant matters, and nothing prices it.**
-`select_balanced_panel` chooses both the contracts and the window from the data, and the
-placebo only rotates the signal inside the already-chosen rectangle. `min_days` of 100,
-120 and 150 all select the same 4-contract rectangle, so 150 is not fine-tuned — but
-180 selects a different 3-contract rectangle and flips the sign of *t* at two of the
-three horizons. A result whose direction depends on an undocumented constant is not a
-result, and the sensitivity table ships so that is visible.
+### Panel selection
 
-**A levels regression here gets the sign backwards.** CPUI against log VIXY in levels
-gives β = −0.060, t = −3.56: more policy uncertainty, *less* implied volatility. Both
-series fail an ADF test on this window, and VIXY — a short-dated VIX-futures ETF — loses
-43 log-percent to roll decay over eight months. In first differences the sign flips to
-positive and stays significant (β = +0.011, t = +3.33), which is both the sensible
-direction and the only one a stationary regression supports. The table reports both
-specifications with a stationarity verdict beside each, because the levels row is a
-trap worth showing rather than deleting.
+`select_balanced_panel` chooses the contracts and the window from the data. The placebo
+rotates the signal only within that selected rectangle, so it does not account for the
+selection step. Values of 100, 120, and 150 for `min_days` all select the same
+four-contract rectangle. A value of 180 selects a different three-contract rectangle
+and reverses the sign of *t* at two of the three horizons. The sensitivity table reports
+this dependence on the selection constant.
+
+### Levels and first differences
+
+A regression of CPUI on log VIXY in levels gives β = −0.060 and t = −3.56, implying
+that higher policy uncertainty is associated with lower implied volatility. Both
+series fail an ADF test in this window. VIXY is a short-dated VIX futures ETF and loses
+43 log percent to roll decay over eight months. In first differences, the sign becomes
+positive and remains significant (β = +0.011, t = +3.33). This direction is consistent
+with the hypothesis, and only the first-difference specification meets the stationarity
+requirement. The output table reports both specifications and includes a stationarity
+verdict for each.
 
 ---
 
@@ -329,8 +340,8 @@ standard error instead of increasing it. With n = 74, an arbitrary `maxlags=10` 
 an OLS p-value of 0.022 to 2×10⁻⁷.
 
 The analysis uses the plug-in bandwidth `floor(4·(n/100)^(2/9))` and reports OLS, HC3,
-and HAC results side by side. The false discovery rate correction uses HC3 results,
-which provide the headline estimates for the contemporaneous daily regressions.
+and HAC results side by side. The false discovery rate correction uses HC3 results as
+the basis for the contemporaneous daily findings.
 
 Both robust fits use the t-distribution rather than the normal. On the daily panels the
 difference is immaterial, but Release 2's monthly windows run to eleven observations,
@@ -340,18 +351,18 @@ screen. Release 1's headline is unaffected: 12 of 25 pairs survive either way.
 ### HAC bandwidth under overlapping targets
 
 A target built from an h-month window shares h-1 months with its own neighbour, so its
-residuals are autocorrelated by construction out to h-1 whatever the sample size. The
-plug-in bandwidth is a function of n alone and does not know that: on n = 389 it returns
-5 for a twelve-month overlapping target, and the resulting t-statistics are 17% to 38%
-too large. The monthly regressions therefore floor the Newey-West bandwidth at h-1 and
-let the plug-in rule take over above it.
+residuals are autocorrelated by construction out to h-1 regardless of sample size. A
+plug-in bandwidth based only on n does not account for that overlap. At n = 389, it
+returns 5 for a twelve-month overlapping target, which produces t-statistics that are
+17% to 38% too large. The monthly regressions therefore set h-1 as the minimum
+Newey-West bandwidth and use the plug-in rule when it returns a larger value.
 
 The same overlap sets a minimum sample. A target spanning h months carries roughly n/h
 independent observations, so cells whose sample is shorter than a few multiples of h are
 not estimated at all. Without that gate the eleven-month window regresses a twelve-month
 overlapping volatility on EPU and reports t = −11.2 against t_OLS = −2.1, from a HAC
 estimator whose bandwidth equals its sample size. That number is an artefact, and it
-would otherwise have been the loudest cell in the release.
+would otherwise have been the largest apparent result in the release.
 
 ### Quoting outages
 
@@ -449,21 +460,20 @@ uses the same loaders and tests.
   such in the output tables.
 - The theme-matched proxy comparison rests on seven to nine monthly observations and is
   descriptive only.
-- Release 3's panel rectangle is chosen from the data — both the contracts and the
-  window — and neither the placebo nor anything else prices that choice. The
-  sensitivity table shows a different constant selects a different panel and flips two
-  signs.
+- Release 3 selects both the contracts and the panel window from the data. The placebo
+  does not account for that selection step. The sensitivity table shows that a
+  different constant selects a different panel and reverses two signs.
 - Release 3's composite is 82% one contract by volume weight, so "aggregate across
   policy domains" overstates what it measures.
-- No release runs an out-of-sample test. Every result is in-sample, with the placebo and
-  the trend control standing in for one.
+- No release runs an out-of-sample test. Every result is in sample, and the placebo and
+  trend control do not replace a true holdout period.
 
 ## The remaining release
 
 Release 4 applies the same specification to roughly 400 months of the
-Baker-Bloom-Davis-Kost Economic Policy and Market Volatility tracker, where there is
-enough data for the question to be answerable, and then asks what a 250-day sample
-could reasonably have detected in the first place.
+Baker-Bloom-Davis-Kost Economic Policy and Market Volatility tracker. That sample is
+long enough to estimate the specification and assess what a 250-day sample could
+reasonably have detected.
 
 ## License
 
