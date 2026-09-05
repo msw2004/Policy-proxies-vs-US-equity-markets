@@ -1,4 +1,4 @@
-"""Release 1 figures.
+"""Figures for Releases 1 and 2.
 
 Palette is the validated four-slot categorical set (blue / orange / aqua / yellow).
 Aqua and yellow sit below 3:1 contrast on the light surface, so every chart that uses
@@ -144,11 +144,64 @@ def fig_event_car():
     plt.close(fig)
 
 
+# ------------------------------------------------------------------- Release 2
+def fig_epu_vs_vol():
+    """Log EPU over realised equity volatility, stacked on one shared time axis.
+
+    Two panels rather than twin y-axes: the series share four decades but not a
+    unit, and a secondary axis would let the eye read a co-movement out of an
+    arbitrary choice of scale.  Stacking makes the turning points comparable and
+    leaves the levels unclaimed.
+    """
+    from . import release2 as r2
+
+    epu = r2.epu_frame()
+    mkt = r2.monthly_market_panel().dropna(subset=["rv12"])
+    common = epu.index.intersection(mkt.index)
+    epu, vol = epu.loc[common], mkt.loc[common, "rv12"] * 100.0
+    x = common.to_timestamp()
+
+    fig, (ax1, ax2) = plt.subplots(
+        2, 1, figsize=(9, 6.2), sharex=True, gridspec_kw={"hspace": 0.30}
+    )
+    fig.suptitle(
+        f"Policy-news intensity and market volatility, {x[0]:%Y}-{x[-1]:%Y}",
+        x=0.0, ha="left", fontsize=13, fontweight="bold",
+    )
+
+    ax1.plot(x, epu["log_EPU"], color=SERIES[0], label="log EPU (headline)")
+    ax1.plot(x, epu["log_EPUMONETARY"], color=SERIES[1],
+             label="log EPU: monetary policy")
+    ax1.set_title("News-based policy uncertainty, monthly", loc="left")
+    ax1.set_ylabel("log index")
+    ax1.legend(loc="upper left", ncol=2, fontsize=8.5)
+    ax1.margins(y=0.22)
+
+    ax2.plot(x, vol, color=SERIES[2], label="SPY trailing 12m realised vol")
+    ax2.set_title("Realised equity volatility, same months", loc="left")
+    ax2.set_ylabel("annualised, %")
+    ax2.legend(loc="upper left", fontsize=8.5)
+    ax2.margins(y=0.22)
+    ax2.set_xlim(x[0], x[-1])
+    ax2.xaxis.set_major_locator(mdates.YearLocator(4))
+    ax2.xaxis.set_major_formatter(mdates.DateFormatter("%Y"))
+
+    for ax in (ax1, ax2):
+        _clean(ax)
+    fig.savefig(OUT_FIG / "f4_epu_vs_vol.png")
+    plt.close(fig)
+
+
 def run_all():
     fig_probabilities()
     fig_rolling_corr()
     fig_event_car()
-    return sorted(p.name for p in OUT_FIG.glob("*.png"))
+    return sorted(p.name for p in OUT_FIG.glob("f[123]_*.png"))
+
+
+def run_release2_figs():
+    fig_epu_vs_vol()
+    return sorted(p.name for p in OUT_FIG.glob("f4_*.png"))
 
 
 if __name__ == "__main__":

@@ -1,0 +1,4 @@
+proxy,frequency,sample,n_obs_max,n_pairs_tested,n_pairs_signif_fdr10,best_abs_t,median_abs_t
+Polymarket implied probability,daily,2025-09-03..2026-08-31,202,25,12,3.840450101545155,1.883063218161961
+EPU (Release 1 window),monthly,10-11 months,11,24,0,2.6436639753116387,0.7861549574773719
+EPU (full 1993-2026),monthly,389-402 months,402,40,11,3.8961444559221854,1.1953739892507054

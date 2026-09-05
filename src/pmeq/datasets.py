@@ -36,6 +36,11 @@ TREASURY_URL = (
     "&field_tdr_date_value={year}&page&_format=csv"
 )
 
+# The categorical EPU sub-indices Release 2 matches to the case themes.  FRED carries
+# these three monthly; the growth and shutdown themes have no published counterpart,
+# which is why `config.THEMES` maps two of the seven markets to "(none published)".
+CATEGORICAL_EPU = ("EPUMONETARY", "EPUTRADE", "EPUSOVDEBT")
+
 # US Eastern is the reference clock.  Measured on this snapshot, the CLOB's daily bars
 # are stamped at 00:00 UTC, i.e. 19:00 ET under EST and 20:00 ET under EDT - three to
 # four hours AFTER the 16:00 ET equity close.  So the bar dated D already contains
@@ -282,12 +287,28 @@ def fetch_fred_series(series: str) -> pd.Series:
     return pd.Series([r[1] for r in rows], index=idx, name=series).sort_index()
 
 
+def fred_to_month_frame(s: pd.Series) -> pd.DataFrame:
+    """Reshape a ``fetch_fred_series`` result into the layout the loaders read.
+
+    ``fetch_fred_series`` returns a DatetimeIndex series named after the series, and
+    writing that straight out gives a ``DATE``/``EPUTRADE`` header that
+    ``load_categorical_epu`` cannot parse - it wants ``month`` and ``value``.  The
+    reshape lives here, next to the fetch, so a refreshed file is readable by the
+    loader that owns it rather than by whichever caller remembered to rename first.
+    """
+    idx = pd.PeriodIndex(pd.to_datetime(s.index), freq="M")
+    out = pd.DataFrame({"month": idx.astype(str), "value": s.to_numpy(dtype=float)})
+    return out.sort_values("month").reset_index(drop=True)
+
+
 def refresh(outdir: Path = DATA_RAW, prices_only: bool = False) -> None:
     """Fetch what Release 1 needs from the canonical sources. Requires network.
 
-    On a fresh clone only the ETF bars are actually missing - the Polymarket
+    On a fresh clone only the ETF bars are actually missing - the Polymarket and EPU
     snapshots are committed - so ``refresh(prices_only=True)`` is the cheap path.
-    The EPU and EMV loaders below are used by Releases 2-4 and are not fetched here.
+    The categorical EPU sub-indices Release 2 reads are refreshed from FRED; the
+    headline monthly EPU and the EMV tracker come from policyuncertainty.com in a
+    different layout and are committed rather than fetched.
     """
     if not prices_only:
         (outdir / "polymarket").mkdir(parents=True, exist_ok=True)
@@ -295,6 +316,12 @@ def refresh(outdir: Path = DATA_RAW, prices_only: bool = False) -> None:
             hist = fetch_polymarket_history(m.yes_token_id)
             hist.to_csv(m.file, index=False)
             print(f"  polymarket/{m.key}: {len(hist)} bars")
+
+        (outdir / "epu").mkdir(parents=True, exist_ok=True)
+        for series in CATEGORICAL_EPU:
+            frame = fred_to_month_frame(fetch_fred_series(series))
+            frame.to_csv(outdir / "epu" / f"{series}.csv", index=False)
+            print(f"  epu/{series}: {len(frame)} months")
 
     (outdir / "prices").mkdir(parents=True, exist_ok=True)
     for t in ["SPY", "TLT", "XLF", "XLI", "VIXY"]:

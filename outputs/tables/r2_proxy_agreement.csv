@@ -1,0 +1,5 @@
+market,theme,categorical_epu,n_months,corr_levels,corr_changes
+fed_hike_2026,monetary,EPUMONETARY,7,-0.784274222762534,-0.09353899751696419
+korea_trade_deal_2027,trade,EPUTRADE,8,-0.5105457354813582,-0.4801966358386492
+us_debt_default_2027,sovereign_debt,EPUSOVDEBT,8,-0.5955375598735518,0.06774411480871187
+gov_shutdown_2025,fiscal_shutdown,EPUSOVDEBT,9,0.0684927166487074,0.4633314982114547

@@ -61,6 +61,13 @@ def ols_hac(
 
     Plain OLS t-statistics are computed alongside and returned in ``tstats_ols``,
     so callers can report both and any HAC-driven inflation stays visible.
+
+    Both robust fits are made with ``use_t=True``.  statsmodels defaults robust
+    covariances to the normal, which is close enough on the daily panels but not on
+    the monthly ones: at n=11 against t(9) the normal understates a two-sided
+    p-value by enough to move a cell across an FDR screen.  Release 1's daily
+    results are unaffected - its smallest sample is 74, and the significant-pair
+    count is 12 of 25 either way.
     """
     df = pd.concat([y.rename("__y__"), X], axis=1).dropna()
     if len(df) <= X.shape[1] + 2:
@@ -72,8 +79,8 @@ def ols_hac(
 
     L = nw_lags(len(df)) if lags == "auto" else int(lags)
     plain = sm.OLS(yy, XX).fit()
-    hc3 = sm.OLS(yy, XX).fit(cov_type="HC3")
-    fit = sm.OLS(yy, XX).fit(cov_type="HAC", cov_kwds={"maxlags": L})
+    hc3 = sm.OLS(yy, XX).fit(cov_type="HC3", use_t=True)
+    fit = sm.OLS(yy, XX).fit(cov_type="HAC", cov_kwds={"maxlags": L}, use_t=True)
     return OLSResult(
         params=fit.params,
         tstats=fit.tvalues,

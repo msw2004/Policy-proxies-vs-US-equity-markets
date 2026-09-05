@@ -1,0 +1,8 @@
+market,theme,theme_label,categorical_epu,emv_component,volume_usd
+fed_sep2026_no_change,monetary,Monetary policy / Fed path,EPUMONETARY,EMVMONETARYPOL,16181391.81
+fed_sep2026_hike25,monetary,Monetary policy / Fed path,EPUMONETARY,EMVMONETARYPOL,14337500.65
+fed_hike_2026,monetary,Monetary policy / Fed path,EPUMONETARY,EMVMONETARYPOL,8206363.56
+us_recession_2026,growth,Recession / macro outlook,(none published),(none published),1717659.17
+korea_trade_deal_2027,trade,Trade policy / tariffs,EPUTRADE,EMVTRADEPOLEMV,59656.99
+us_debt_default_2027,sovereign_debt,Sovereign debt / default risk,EPUSOVDEBT,(none published),16228.31
+gov_shutdown_2025,fiscal_shutdown,Government shutdown / appropriations,EPUSOVDEBT,(none published),3512314.57
