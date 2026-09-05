@@ -14,7 +14,9 @@ for public views on US fiscal, monetary, and trade policy.
 
 Release 1 finds that prediction market probabilities and market prices often move
 together on the same day, in directions consistent with theory. The daily data do not
-show which market moves first. Release 2 helps explain that limitation. Its regressions
+show which market moves first. 
+
+Release 2 helps explain that limitation. Its regressions
 find no FDR-significant relationship in the eleven-month window, but the same measure
 and specification produce eleven significant relationships over roughly 400 months.
 This comparison suggests that sample length limits Release 1 more than the choice of
