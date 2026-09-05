@@ -1,0 +1,3 @@
+construction,n_contracts,n_days,roster_constant,contracts_min,contracts_max,mean_before_cut,mean_after_cut,shift_in_sd
+balanced rectangle (used),4,159,True,4,4,-0.3369500418921374,0.4872815990440146,1.1132242506017385
+"all contracts, unbalanced (robustness only)",6,195,False,2,6,-0.2827619071978489,0.44274561784926425,0.9842432107356346

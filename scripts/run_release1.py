@@ -66,7 +66,7 @@ def main() -> None:
     print(f"\nsmallest FDR-adjusted p in either direction: "
           f"{min(g['p_prob_leads_market_fdr'].min(), g['p_market_leads_prob_fdr'].min()):.3f}")
 
-    figs = plots.run_all()
+    figs = plots.run_release1_figs()
     print(f"\nwrote {len(figs)} figures to {OUT_FIG}")
     print(f"wrote {len(list(OUT_TAB.glob('r1_*.csv')))} tables to {OUT_TAB}")
 

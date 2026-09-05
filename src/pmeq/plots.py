@@ -1,4 +1,4 @@
-"""Figures for Releases 1 and 2.
+"""Figures for Releases 1 to 3.
 
 Palette is the validated four-slot categorical set (blue / orange / aqua / yellow).
 Aqua and yellow sit below 3:1 contrast on the light surface, so every chart that uses
@@ -8,6 +8,7 @@ beside the figure.  No chart here uses two y-axes.
 from __future__ import annotations
 
 import numpy as np
+import pandas as pd
 
 import matplotlib
 matplotlib.use("Agg")
@@ -16,7 +17,10 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import PercentFormatter
 
 from . import datasets as ds
-from .config import BENCHMARK, ESTIMATION_WINDOW, EVENT_WINDOW, OUT_FIG
+from .config import (
+    BENCHMARK, ESTIMATION_WINDOW, EVENT_WINDOW, HAC_LAGS_DAILY, OUT_FIG,
+    RANDOM_SEED,
+)
 from .stats_tools import detect_jumps, event_study
 
 SURFACE = "#fcfcfb"
@@ -192,7 +196,118 @@ def fig_epu_vs_vol():
     plt.close(fig)
 
 
-def run_all():
+def fig_placebo():
+    """Release 3's central exhibit: the observed increment against its own null.
+
+    The point of plotting the whole null rather than quoting a p-value is that the
+    null's *width* is the thing worth seeing.  At daily frequency with persistent
+    regressors a circularly-shifted signal routinely earns a few percent of R^2
+    from nothing at all, so "beat the 95th percentile" is a much higher bar than
+    "beat zero", and how much higher is visible here rather than asserted.
+    """
+    from .release3 import (
+        BASE_COLS, build_factor_panel, composite_index, hac_lags_for, risk_frame)
+    from .stats_tools import circular_block_permutation, zscore
+
+    h = 21
+    panel, _ = build_factor_panel()
+    cpui = composite_index(panel)
+    rf = risk_frame(h)
+    # the release's own baseline and bandwidth, not a second set chosen here -
+    # a figure that plots a different specification from the tables is a way to
+    # publish two answers to one question
+    perm = circular_block_permutation(
+        rf["fwd_rv"], rf[BASE_COLS], pd.DataFrame({"CPUI": zscore(cpui)}),
+        n_iter=2000, lags=hac_lags_for(h, len(rf.dropna())), seed=RANDOM_SEED,
+    )
+    obs = perm["observed"]["delta_r2"]
+    null = perm["null"]
+    floor = perm["detectable_floor"]
+
+    fig, ax = plt.subplots(figsize=(8.4, 4.4))
+    ax.hist(100 * null, bins=40, color=SERIES[0], alpha=0.55, edgecolor=SURFACE, lw=0.6,
+            label=f"placebo: all {perm['n_shifts']} distinct circular shifts")
+    ax.axvline(100 * obs, color=SERIES[1], lw=2.4)
+    ax.axvline(100 * floor, color=NEUTRAL, lw=1.4, ls="--")
+
+    top = ax.get_ylim()[1]
+    ax.annotate(f"observed\n{100*obs:.2f}%", xy=(100 * obs, top * 0.97),
+                xytext=(5, 0), textcoords="offset points", color=SERIES[1],
+                fontsize=8.5, weight="600", va="top")
+    ax.annotate(f"10% critical value\n{100*floor:.2f}%", xy=(100 * floor, top * 0.62),
+                xytext=(6, 0), textcoords="offset points", color=INK2,
+                fontsize=8.5, va="top")
+    ax.set_title(
+        f"Release 3: incremental R-squared of CPUI at {h} days, against its own null",
+        loc="left", color=INK)
+    ax.set_xlabel("increment in R-squared over the volatility baseline, %")
+    ax.set_ylabel("placebo draws")
+    ax.legend(fontsize=8.5, loc="upper right")
+    _clean(ax)
+    fig.text(0.0, -0.04,
+             f"Exact: every distinct shift enumerated, p = {perm['p_value']:.3f}. "
+             "The observed increment sits inside the null, which is the result.",
+             fontsize=8, color=INK2)
+    fig.savefig(OUT_FIG / "f5_placebo.png")
+    plt.close(fig)
+
+
+def fig_cpui():
+    """The index itself, with the roster shown beneath it.
+
+    Any index built from an entering and exiting set of contracts invites the
+    question "did the number move, or did the membership?".  Plotting the live
+    count directly under the level answers it in the figure instead of in a
+    footnote.
+    """
+    from .release3 import build_factor_panel, composite_index
+    from .stats_tools import zscore
+
+    panel, _ = build_factor_panel()
+    cpui = zscore(composite_index(panel))
+
+    fig, axes = plt.subplots(
+        2, 1, figsize=(9, 5.2), sharex=True,
+        gridspec_kw={"height_ratios": [3, 1]})
+    axes[0].plot(cpui.index, cpui.values, color=SERIES[0], label="CPUI (standardised)")
+    axes[0].axhline(0, color=NEUTRAL, lw=1)
+    axes[0].set_ylabel("standard deviations")
+
+    # The window's first day carries a genuine 29% -> 10% repricing of the largest
+    # contract, which is a 6.4 sd flow reading.  It is real, so it is not dropped -
+    # but left in frame it flattens every other day into a band, so the axis is set
+    # from the rest of the sample and the point is labelled instead.
+    rest = cpui.iloc[1:]
+    lo, hi = rest.min(), rest.max()
+    pad = 0.12 * (hi - lo)
+    if cpui.iloc[0] > hi + pad:
+        axes[0].set_ylim(lo - pad, hi + pad)
+        axes[0].annotate(
+            f"{cpui.iloc[0]:.1f} sd - a genuine 29%->10% repricing\n"
+            f"of the largest contract, off scale",
+            xy=(cpui.index[0], hi + pad), xytext=(28, -12),
+            textcoords="offset points", fontsize=8, color=INK2,
+            arrowprops=dict(arrowstyle="->", color=NEUTRAL, lw=1))
+    axes[0].set_title(
+        "Composite policy-uncertainty index, balanced panel", loc="left", color=INK)
+    axes[0].legend(fontsize=8.5, loc="upper left")
+    _clean(axes[0])
+
+    live = panel["n_live_contracts"].reindex(cpui.index)
+    axes[1].step(live.index, live.values, color=SERIES[2], where="post")
+    axes[1].set_ylabel("contracts")
+    axes[1].set_ylim(0, max(4, float(live.max()) + 1))
+    axes[1].set_title("Contracts quoting on each day - constant by construction",
+                      loc="left", color=INK, fontsize=9.5)
+    _clean(axes[1])
+    axes[1].xaxis.set_major_locator(mdates.MonthLocator(interval=1))
+    axes[1].xaxis.set_major_formatter(mdates.DateFormatter("%b %Y"))
+    fig.tight_layout()
+    fig.savefig(OUT_FIG / "f6_cpui.png")
+    plt.close(fig)
+
+
+def run_release1_figs():
     fig_probabilities()
     fig_rolling_corr()
     fig_event_car()
@@ -202,6 +317,16 @@ def run_all():
 def run_release2_figs():
     fig_epu_vs_vol()
     return sorted(p.name for p in OUT_FIG.glob("f4_*.png"))
+
+
+def run_release3_figs():
+    fig_placebo()
+    fig_cpui()
+    return sorted(p.name for p in OUT_FIG.glob("f[56]_*.png"))
+
+
+def run_all():
+    return run_release1_figs() + run_release2_figs() + run_release3_figs()
 
 
 if __name__ == "__main__":

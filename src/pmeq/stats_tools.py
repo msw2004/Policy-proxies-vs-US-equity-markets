@@ -353,43 +353,90 @@ def circular_block_permutation(
     n_iter: int = 2000,
     lags: int | str = "auto",
     seed: int = 0,
+    alpha: float = 0.10,
 ) -> dict:
     """Null distribution of the incremental R^2 under circular shifts of the signal.
 
-    Rotating the regressor block by a random offset preserves its own
-    autocorrelation and marginal distribution while destroying any true alignment
-    with the dependent variable.  A large observed delta-R^2 that sits inside this
-    null is a spurious-regression artefact, not evidence.
+    Rotating the regressor by an offset preserves its own autocorrelation and
+    marginal distribution while destroying any true alignment with the dependent
+    variable.  A large observed increment sitting inside this null is a
+    spurious-regression artefact, not evidence.
+
+    Three things about this implementation are worth knowing, because the naive
+    version of each one is wrong in the direction that manufactures significance.
+
+    **The null is enumerated, not sampled, whenever it can be.**  There are only
+    ``n`` distinct circular shifts, and after trimming the ends only about
+    ``0.9n`` usable ones - roughly 145 on a 160-day panel.  Drawing 500 random
+    offsets from 145 possibilities does not buy resolution, it just repeats
+    draws, and quoting ``p = 0.004`` off it implies 30x more precision than the
+    design can carry.  When the number of distinct shifts is at or below
+    ``n_iter`` every one of them is evaluated and the p-value is exact.
+
+    **The p-value uses the (r+1)/(m+1) estimator.**  ``(null >= obs).mean()`` is
+    biased downward and can return exactly zero, which is never a defensible
+    thing to publish about a permutation test.
+
+    **The reported floor matches the decision rule.**  ``detectable_floor`` is
+    the ``1-alpha`` quantile of the null - the smallest increment this test could
+    actually call significant at the level being used.  Reporting a 95th
+    percentile beside a 10% test overstates how uninformative a null result was.
+
+    A caution this function cannot fix: a circular shift of a *trending* signal
+    creates a discontinuity at the wrap point, which makes the shifted series a
+    worse regressor than the original and biases the null low.  Against a trending
+    signal this test over-rejects - a deterministic ramp passes it.  Callers must
+    remove the trend, or put it in ``base``, before the null means anything.
     """
     rng = np.random.default_rng(seed)
     obs = incremental_r2(y, base, signal, lags=lags)
     n = len(signal)
     if n < 30:
-        return {"observed": obs, "p_value": np.nan, "null": np.array([])}
+        return {"observed": obs, "p_value": np.nan, "null": np.array([]),
+                "null_mean": np.nan, "detectable_floor": np.nan,
+                "null_q95": np.nan, "n_shifts": 0, "exact": False}
 
-    null = np.empty(n_iter)
     vals = signal.to_numpy()
     idx = signal.index
     lo, hi = max(5, int(0.05 * n)), n - max(5, int(0.05 * n))
-    for i in range(n_iter):
-        shift = int(rng.integers(lo, hi)) if hi > lo else 1
-        rolled = pd.DataFrame(np.roll(vals, shift, axis=0), index=idx, columns=signal.columns)
+    if hi <= lo:                      # too short to trim; use every nontrivial shift
+        lo, hi = 1, n
+    candidates = np.arange(lo, hi)
+    exact = len(candidates) <= n_iter
+    shifts = candidates if exact else rng.choice(candidates, n_iter, replace=False)
+
+    null, failures = [], 0
+    for shift in shifts:
+        rolled = pd.DataFrame(
+            np.roll(vals, int(shift), axis=0), index=idx, columns=signal.columns)
         try:
-            null[i] = incremental_r2(y, base, rolled, lags=lags)["delta_r2"]
-        except Exception:
-            null[i] = np.nan
-    null = null[~np.isnan(null)]
-    p = float((null >= obs["delta_r2"]).mean()) if len(null) else np.nan
+            null.append(incremental_r2(y, base, rolled, lags=lags)["delta_r2"])
+        except Exception:                                          # noqa: BLE001
+            failures += 1
+    null = np.asarray([v for v in null if np.isfinite(v)])
+    if not len(null):
+        return {"observed": obs, "p_value": np.nan, "null": null,
+                "null_mean": np.nan, "detectable_floor": np.nan,
+                "null_q95": np.nan, "n_shifts": 0, "exact": exact,
+                "failed_draws": failures}
+
+    # (r+1)/(m+1): never returns zero, and is the valid estimator for a
+    # permutation p-value whether the null is enumerated or sampled
+    r = int((null >= obs["delta_r2"]).sum())
+    p = (r + 1) / (len(null) + 1)
     return {
         "observed": obs,
-        "p_value": p,
+        "p_value": float(p),
         "null": null,
-        "null_mean": float(np.mean(null)) if len(null) else np.nan,
-        # the smallest increment this placebo could ever call significant: if the
-        # null's 95th percentile is large, the test has no power and a "does not
-        # survive" verdict is uninformative rather than evidence of absence
-        "detectable_floor": float(np.quantile(null, 0.95)) if len(null) else np.nan,
-        "null_q95": float(np.quantile(null, 0.95)) if len(null) else np.nan,
+        "null_mean": float(np.mean(null)),
+        # the smallest increment this test could call significant AT ALPHA - where
+        # this exceeds the observed increment, "does not survive" is a statement
+        # about power, not about the world
+        "detectable_floor": float(np.quantile(null, 1 - alpha)),
+        "null_q95": float(np.quantile(null, 0.95)),
+        "n_shifts": int(len(null)),
+        "exact": bool(exact),
+        "failed_draws": failures,
     }
 
 
@@ -427,7 +474,14 @@ def effective_n(y: pd.Series, x: pd.Series) -> float:
     if not (np.isfinite(r1) and np.isfinite(r2)):
         return float(len(df))
     prod = float(np.clip(r1 * r2, -0.999, 0.999))
-    return float(len(df) * (1 - prod) / (1 + prod))
+    # Clamped at n.  When r1*r2 < 0 the formula returns *more* than the raw sample
+    # size, which is meaningless as an effective n and quietly makes the
+    # "conservative" figure the looser one.  On short samples that is not exotic:
+    # at n=10 the lag-1 estimator has SE ~ 0.32 and a -1/n bias, and a differenced
+    # regressor reliably shows spurious negative autocorrelation - one cell in
+    # Release 2's power table was reporting an effective n of 21.2 against a real
+    # n of 10.
+    return float(min(len(df), len(df) * (1 - prod) / (1 + prod)))
 
 
 def power_for_effect(
