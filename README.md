@@ -1,37 +1,50 @@
 # Prediction markets, policy news, and US equities
 
-This repository contains Releases 1 to 3 of a four-part study of quantitative proxies
-for public views on US fiscal, monetary, and trade policy.
+A four-part study of quantitative proxies for public views on US fiscal, monetary, and
+trade policy, tested against US equity outcomes under one specification.
 
-- Release 1 compares Polymarket implied probabilities with US equity and rates ETFs
+- **Release 1** compares Polymarket implied probabilities with US equity and rates ETFs
   over 250 trading days.
-- Release 2 applies the same tests to the Baker, Bloom, and Davis news-based Economic
-  Policy Uncertainty index and its categorical sub-indices. It uses both the Release 1
-  window and the full sample from 1993 to 2026.
-- Release 3 converts raw probabilities into interpretable factors, combines them in a
-  composite policy uncertainty index, and tests whether the index improves forecasts
-  of future volatility.
+- **Release 2** applies the same tests to the Baker, Bloom, and Davis news-based
+  Economic Policy Uncertainty index and its categorical sub-indices, on both the Release
+  1 window and the full 1993–2026 sample.
+- **Release 3** converts raw probabilities into interpretable factors, combines them in
+  a composite policy uncertainty index, and tests whether it improves volatility
+  forecasts.
+- **Release 4** puts the same specification on 390 months of the Baker, Bloom, Davis and
+  Kost Equity Market Volatility tracker, where the sample is long enough for the
+  question to be answerable.
 
-Release 1 finds that prediction market probabilities and market prices often move
-together on the same day, in directions consistent with theory. The daily data do not
-show which market moves first. 
+## What the study found
 
-Release 2 helps explain that limitation. Its regressions
-find no FDR-significant relationship in the eleven-month window, but the same measure
-and specification produce eleven significant relationships over roughly 400 months.
-This comparison suggests that sample length limits Release 1 more than the choice of
-proxy does.
+**One real effect, and it is not usable.** Release 4 identifies a robust association
+between month-*t* policy-news intensity and month-*t+1* absolute return — ΔR² = 5.96%
+over an autoregressive volatility baseline, confirmed out of sample at +7.7% OOS R².
+It does not survive the publication lag: the index is not released until several days
+into the target month, and at the lag a person could actually have traded, the
+out-of-sample gain is +0.04%.
 
-Release 3 also reports a null result. An earlier version appeared to find a strong
-relationship, but the signal was a shared time trend. The placebo test also accepted a
-deterministic ramp, the grid had no multiplicity correction, and one contract supplied
-82% of the aggregate weight. After correcting those problems, none of the 15 cells is
-significant. The value of this release lies in documenting the checks that overturned
-the initial result.
+Everything else is null, and the nulls are the substance:
 
-Every quantitative claim below was recomputed independently during an adversarial
-review. Three of those checks changed a conclusion. When a number differs from an
-earlier draft, the relevant section explains the correction.
+- Release 1 finds same-day co-movement in the directions theory predicts, but the daily
+  data cannot establish which market moves first — prediction-market bars are stamped
+  after the equity close, and 38% of the event-study move lands before the probability
+  jumps.
+- Release 2 finds nothing on Release 1's eleven months and eleven significant
+  relationships over 400. The binding constraint is sample length, not the proxy.
+- Release 3 finds nothing. Its first version reported a strong result that turned out to
+  be a shared time trend, validated by a placebo a deterministic ramp also passes, on an
+  uncorrected grid, from an aggregate that is 82% one contract.
+
+## On the numbers below
+
+Every quantitative claim in this repository was recomputed independently by an
+adversarial review before publication. **Those reviews overturned a headline result in
+Releases 2, 3 and 4** — the comparison window, the trend control, and the publication
+lag respectively. Where a number differs from an earlier draft, the section says which
+was wrong and why. The corrections are documented rather than quietly applied, because
+in every case the defective version produced the more impressive result, and that
+pattern is the most portable thing here.
 
 ---
 
@@ -332,6 +345,169 @@ verdict for each.
 
 ---
 
+# Release 4: the long sample, and what it costs to be usable
+
+Releases 1 to 3 all end in the same place: the window is too short to answer the
+question. Release 4 removes that constraint. The Baker, Bloom, Davis and Kost Equity
+Market Volatility tracker is a newspaper-based measure of volatility-relevant news
+flow, published monthly with policy-specific components, and it gives **390 usable
+months** against Release 3's 159 trading days.
+
+The specification keeps the same shape as Release 3 — a persistent uncertainty index, an
+autoregressive volatility baseline to beat, HAC errors, a circular-shift placebo — so a
+difference in verdict is attributable to power rather than to a change of model. Every
+correction Release 3 needed is applied here from the start: a linear trend in the
+baseline, an exactly enumerated placebo, BH-FDR across the grid, a bandwidth floored at
+the target's overlap, and a stationarity verdict for every signal, target and control.
+
+**There is a real effect here, and it is not usable.** Those are two separate findings
+and the release reports both.
+
+## The trend control, as a control
+
+Release 3's result was a shared time trend. Running the same decomposition here is how
+we know that was a short-window artefact rather than a property of news-based measures:
+
+| Signal | corr with elapsed time | ΔR² without trend | ΔR² with trend |
+|---|--:|--:|--:|
+| log EMV overall | −0.005 | 0.0599 | 0.0596 |
+| log EMV monetary | +0.019 | 0.0578 | 0.0578 |
+| Release 3's `agg_entropy` | **+0.84** | 0.0886 | **0.0049** |
+
+Over 390 months the EMV series are stationary and trendless, and the control removes
+essentially nothing. Over eight months Release 3's index was almost pure drift.
+
+## The effect
+
+Over a baseline of trailing 12-month realised volatility, |return| and a trend, log EMV
+overall adds **ΔR² = 5.96%** to a forecast of next month's |SPY return|:
+
+| Target | Signal | n | ΔR² | t (HAC) | placebo p | FDR p |
+|---|---|--:|--:|--:|--:|--:|
+| next month \|return\| | EMV overall | 390 | 0.0596 | 4.27 | 0.0028 | 0.0102 |
+| next month \|return\| | EMV monetary | 390 | 0.0578 | 4.92 | 0.0028 | 0.0102 |
+| next month \|return\| | EMV policy pair | 390 | 0.0578 | 4.82 | 0.0028 | 0.0102 |
+| next month \|return\| | EPU headline | 390 | 0.0210 | 3.12 | 0.0028 | 0.0102 |
+| forward 12m vol (log) | EMV overall | 379 | 0.0619 | 3.91 | 0.1192 | 0.3065 |
+| next month \|return\| | EMV trade | 390 | 0.0022 | 1.06 | 0.3598 | 0.4317 |
+
+Five of eighteen cells survive FDR at 10%; four of twelve forward-looking ones.
+
+The placebo p of 0.0028 is 1/353 — no shift out of 352 beat the observed increment. That
+is the floor of the design, so it is worth checking the gap is real rather than a
+resolution artefact: the null has mean 0.0033 and a **maximum of 0.0317**, against an
+observed 0.0596. The observed value is 13.6 standard deviations above the null mean and
+nearly twice the largest value the null ever reaches.
+
+It also survives everything that broke the earlier releases. The bandwidth is irrelevant
+(t = 4.26 / 4.27 / 4.05 / 3.98 / 3.96 at 1, 5, 10, 20, 30 lags, because the target has no
+overlap). A richer AR baseline does not absorb it (adding eleven lags of |return| leaves
+ΔR² = 0.050, t = 3.63). It holds in both halves (1994–2009: t = 2.94; 2010–2026:
+t = 3.27). And roughly half of it comes from high-volatility months — dropping the top 5%
+by |return| leaves ΔR² = 0.033, t = 3.65 — which is a dependence worth stating, but it
+survives every cut including winsorising.
+
+## It is one finding, not four
+
+Four cells clear the FDR screen, which reads as four results. Conditioning each on the
+others:
+
+| Signal | ΔR² alone | t alone | ΔR² given the others | t given the others |
+|---|--:|--:|--:|--:|
+| EMV overall | 0.0596 | 4.27 | 0.0087 | 1.85 |
+| EMV monetary | 0.0578 | 4.92 | 0.0076 | 1.87 |
+| EMV trade | 0.0022 | 1.06 | 0.0060 | −1.80 |
+| EPU headline | 0.0210 | 3.12 | 0.0029 | 1.36 |
+
+None of them stands up once the others are present. EMV overall and EMV monetary
+correlate 0.75; the "policy pair" is EMV monetary plus a regressor that adds
+ΔR² = 0.00005 (t = −0.18); headline EPU adds nothing once EMV overall is in. The four
+cells are one effect, and an FDR grid that treats them as separate discoveries counts it
+four times.
+
+Headline EPU should be discounted further. It is a unit root on this sample (ADF
+p = 0.18, KPSS p = 0.01) correlating +0.65 with elapsed time, and its increment **more
+than doubles** when the trend control is added (0.0091 → 0.0210) — the signature of a
+regressor entangled with a drift, not of robustness. The circular-shift placebo is also
+anti-conservative against stochastic trends specifically, so its nominal p understates
+the true size for exactly this cell.
+
+## And it is not implementable
+
+EMV for month *t* is built from newspapers dated within *t*, so there is no look-ahead in
+the strict sense. But the index is not **released** until several days into month *t+1*,
+by which time part of the target month has already happened. A forecast that needs a
+number nobody has yet is not a forecast.
+
+The conservative bound is to use month *t−1*'s EMV to predict month *t+1*. The effect
+decays with roughly a one-month half-life, so the bound is not close:
+
+| Signal lag | Implementable | ΔR² | t | placebo p | share of lag-0 retained |
+|--:|:--|--:|--:|--:|--:|
+| 0 | no | 0.0596 | 4.27 | 0.0028 | 100% |
+| **1** | **yes** | **0.0183** | **2.63** | **0.0142** | **31%** |
+| 2 | yes | 0.0055 | 1.49 | — | 9% |
+| 3 | yes | 0.0040 | 1.15 | — | 7% |
+
+EMV monetary and headline EPU do not survive the lag at all (t falls to 1.61 and 0.79).
+
+The out-of-sample test settles it. This is the only genuine out-of-sample exercise in the
+study — 270 expanding-window, one-step-ahead forecasts, scored as
+1 − SSE(full)/SSE(baseline):
+
+| Signal | Lag | OOS R² | Diebold-Mariano t |
+|---|--:|--:|--:|
+| EMV overall | 0 | **+7.7%** | 1.85 |
+| EMV overall | **1** | **+0.04%** | **0.02** |
+| EMV monetary | 0 | +7.5% | 2.74 |
+| EMV monetary | 1 | −0.6% | −0.45 |
+
+In sample and out of sample agree at lag 0, which is what makes the lag decisive rather
+than a quibble. At the lag a person could actually have traded, the signal earns nothing.
+
+**The honest claim: one EMV-based association between month-*t* policy-news intensity and
+month-*t+1* absolute return, robust in sample and out, and worth about nothing once you
+wait for the index to be published.**
+
+## What Release 3 could have seen
+
+Given the effect sizes the long sample identifies, Release 3's window had:
+
+| | Release 3's n |
+|---|--:|
+| raw n (10-day horizon) | 159 |
+| Bartlett effective n | 69 |
+| power at n = 159, α = 0.05 | 0.91 |
+| power at effective n = 69 | 0.58 |
+| power against Release 3's own FDR screen | 0.69 |
+| n needed for 80% power | 120 |
+
+So Release 3's null was not strong evidence of absence: against an EMV-sized effect it
+had a bit better than a coin flip once autocorrelation is accounted for. Two caveats,
+both of which cut against this comparison rather than for it. The effect sizes are the
+ones that *survived* on the long sample, so they are biased upward and this power is
+optimistic. And assuming a monthly news-based effect transfers to a daily
+prediction-market signal on a different target is a strong assumption — only the
+"n needed" column is free of it.
+
+## Caveats specific to this release
+
+- **The estimation sample starts in 1994, not 1985.** EMV runs from 1985-01, but SPY
+  monthly data begins 1993-02 and the 12-month volatility control costs another year, so
+  roughly 110 months of available EMV data are discarded. A longer equity series would
+  recover them.
+- **Quarter-samples are uneven**: 1994–2001 t = 0.58, 2002–2009 t = 3.39, 2010–2017
+  t = 6.50, 2018–2026 t = 1.33. The halves both work; the quarters say the effect is
+  concentrated in the middle two decades.
+- **The largest increments in the release are contemporaneous, not forecasts.** Trailing
+  12-month volatility gives ΔR² up to 0.119, and it is excluded from every cross-release
+  comparison for that reason.
+- **`log_EPUTRADE` is also a unit root** (ADF p = 0.17, KPSS p = 0.02), and `log_rv12` —
+  which appears in almost every baseline — is ambiguous (ADF p = 0.07). The stationarity
+  table reports all of them.
+
+---
+
 ## Methodological details
 
 ### Covariance estimator
@@ -390,7 +566,8 @@ python -m pmeq.datasets refresh    # one-time download of ETF bars; requires net
 python scripts/run_release1.py     # prediction market strand
 python scripts/run_release2.py     # policy uncertainty strand
 python scripts/run_release3.py     # composite index; ~2 min for the placebo
-pytest tests/                      # run 49 guardrail tests
+python scripts/run_release4.py     # EMV tracker; ~4 min
+pytest tests/                      # run 69 guardrail tests
 ```
 
 `run_release3.py` takes an optional placebo-draw count (`python scripts/run_release3.py
@@ -405,7 +582,7 @@ repository. After the download, the analysis runs offline and reproduces the sav
 outputs from the snapshots.
 
 If the price data are missing, each runner exits with a one-line instruction and the
-price-dependent tests are skipped rather than failed, producing `26 passed, 23 skipped`.
+price-dependent tests are skipped rather than failed, producing `27 passed, 42 skipped`.
 
 Tables are written to `outputs/tables/*.csv`, and figures are written to
 `outputs/figures/*.png`.
@@ -421,21 +598,23 @@ src/pmeq/
   release1.py     prediction market pipeline
   release2.py     policy uncertainty pipeline
   release3.py     factor construction, composite index, placebo, trend decomposition
+  release4.py     EMV tracker, publication lag, out-of-sample test, power
   plots.py        figure generation
 scripts/run_release1.py
 scripts/run_release2.py
 scripts/run_release3.py
+scripts/run_release4.py
 tests/            look-ahead checks, FDR, permutation mechanics, window definitions,
                   trend control, placebo power, power arithmetic, and data sanity
 data/raw/polymarket/  committed probability snapshots from the public API
 data/raw/epu/         committed monthly EPU headline and categorical sub-indices
+data/raw/emv/         committed EMV tracker and its policy components
 data/raw/prices/      empty until `python -m pmeq.datasets refresh` is run
 outputs/          tables and figures
 ```
 
 `config.py` records each contract's CLOB token ID so the exact sample can be fetched
-again. `datasets.py` and `stats_tools.py` are shared across the study, and Release 4
-uses the same loaders and tests.
+again. `datasets.py` and `stats_tools.py` are shared across all four releases.
 
 ## Data provenance
 
@@ -446,7 +625,8 @@ uses the same loaders and tests.
 | Headline monthly EPU | policyuncertainty.com | committed |
 | Categorical EPU sub-indices | FRED `EPUMONETARY`, `EPUTRADE`, `EPUSOVDEBT` | committed |
 | Daily EPU | policyuncertainty.com | not retrievable here; see Release 2, result 1 |
-| ETF daily bars | Yahoo Finance through `yfinance` | fetched, not redistributed |
+| EMV tracker and components | FRED `EMVOVERALLEMV`, `EMVMONETARYPOL`, `EMVTRADEPOLEMV` (Baker, Bloom, Davis & Kost, *JFE* 175(C), 2026, doi:10.1016/j.jfineco.2025.104187) | committed |
+| ETF and SPY bars | Yahoo Finance through `yfinance` | fetched, not redistributed |
 
 ## Caveats
 
@@ -467,15 +647,21 @@ uses the same loaders and tests.
   different constant selects a different panel and reverses two signs.
 - Release 3's composite is 82% one contract by volume weight, so "aggregate across
   policy domains" overstates what it measures.
-- No release runs an out-of-sample test. Every result is in sample, and the placebo and
-  trend control do not replace a true holdout period.
+- Releases 1 to 3 run no out-of-sample test; the placebo and trend control stand in for
+  one. Release 4 does run one, and it is what settles that release.
+- Release 4's publication-lag result uses a reconstructed lag, not a real-time vintage
+  of the index. It is the conservative bound rather than a measurement.
 
-## The remaining release
+## What would move this forward
 
-Release 4 applies the same specification to roughly 400 months of the
-Baker-Bloom-Davis-Kost Economic Policy and Market Volatility tracker. That sample is
-long enough to estimate the specification and assess what a 250-day sample could
-reasonably have detected.
+- **Intraday prediction-market data.** Release 1's direction question is unanswerable at
+  daily frequency and would be straightforward with timestamps.
+- **A real-time vintage of the EMV tracker**, to settle whether any part of the effect
+  is capturable rather than bounding it.
+- **A longer equity series.** Release 4 discards ~110 months of available EMV data
+  because SPY monthly data starts in 1993.
+- **The daily EPU index**, which the build environment could not retrieve and which is
+  the one strand of the original brief left unfinished.
 
 ## License
 

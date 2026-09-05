@@ -1,0 +1,19 @@
+target,target_label,signal_set,n,delta_r2_no_trend,delta_r2_with_trend,trend_free_increment_retained,increment_grew_with_trend_control
+fwd_abs_ret,next month |return|,EMV overall,390,0.05994058065547314,0.059593863738257924,0.994215656347941,False
+fwd_abs_ret,next month |return|,EMV monetary,390,0.05782359476942078,0.057775800203121674,0.9991734418019202,False
+fwd_abs_ret,next month |return|,EMV trade,390,0.0016623837173189715,0.002234527844130585,,True
+fwd_abs_ret,next month |return|,EMV policy pair,390,0.05796367296544158,0.05782870435107956,0.9976714965174397,False
+fwd_abs_ret,next month |return|,EPU headline,390,0.009064379402505596,0.02100861242327201,2.31771106331502,True
+fwd_abs_ret,next month |return|,EPU categorical,389,0.011970955975436848,0.012253075281305259,1.0235669821564202,True
+log_fwd_rv12,realised vol over next 12m (log),EMV overall,379,0.05998482422575546,0.06194260620984959,1.0326379548388094,True
+log_fwd_rv12,realised vol over next 12m (log),EMV monetary,379,0.042369094844939004,0.04213791131834921,0.9945435811778403,False
+log_fwd_rv12,realised vol over next 12m (log),EMV trade,379,0.0164535812721458,0.01570715272507739,0.9546342808460772,False
+log_fwd_rv12,realised vol over next 12m (log),EMV policy pair,379,0.04856966918549155,0.04788911207300883,0.9859880224861403,False
+log_fwd_rv12,realised vol over next 12m (log),EPU headline,379,0.000780293704923829,0.00017720943542987033,,False
+log_fwd_rv12,realised vol over next 12m (log),EPU categorical,379,0.02288214185427262,0.022121486458477557,0.9667576837588291,False
+log_rv12,trailing 12m realised vol (log),EMV overall,390,0.11042291493100787,0.1110112607016962,1.0053281130194394,True
+log_rv12,trailing 12m realised vol (log),EMV monetary,390,0.032626452026810804,0.031998230830511565,0.9807450348636438,False
+log_rv12,trailing 12m realised vol (log),EMV trade,390,0.0009746635315684982,0.0034213007788963523,,True
+log_rv12,trailing 12m realised vol (log),EMV policy pair,390,0.03753302273200665,0.041603336071002195,1.1084461906534522,True
+log_rv12,trailing 12m realised vol (log),EPU headline,390,0.08277013643289788,0.08534566288371703,1.0311166147817956,True
+log_rv12,trailing 12m realised vol (log),EPU categorical,389,0.12063759399414176,0.11914233743433511,0.9876053847701964,False

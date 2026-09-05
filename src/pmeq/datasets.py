@@ -41,6 +41,10 @@ TREASURY_URL = (
 # which is why `config.THEMES` maps two of the seven markets to "(none published)".
 CATEGORICAL_EPU = ("EPUMONETARY", "EPUTRADE", "EPUSOVDEBT")
 
+# The Baker-Bloom-Davis-Kost EMV tracker and the two policy components Release 4
+# uses.  FRED carries all three monthly.
+EMV_TRACKER = ("EMVOVERALLEMV", "EMVMONETARYPOL", "EMVTRADEPOLEMV")
+
 # US Eastern is the reference clock.  Measured on this snapshot, the CLOB's daily bars
 # are stamped at 00:00 UTC, i.e. 19:00 ET under EST and 20:00 ET under EDT - three to
 # four hours AFTER the 16:00 ET equity close.  So the bar dated D already contains
@@ -367,6 +371,12 @@ def refresh(outdir: Path = DATA_RAW, prices_only: bool = False) -> None:
             frame = fred_to_month_frame(fetch_fred_series(series))
             frame.to_csv(outdir / "epu" / f"{series}.csv", index=False)
             print(f"  epu/{series}: {len(frame)} months")
+
+        (outdir / "emv").mkdir(parents=True, exist_ok=True)
+        for series in EMV_TRACKER:
+            frame = fred_to_month_frame(fetch_fred_series(series))
+            frame.to_csv(outdir / "emv" / f"{series}.csv", index=False)
+            print(f"  emv/{series}: {len(frame)} months")
 
     (outdir / "prices").mkdir(parents=True, exist_ok=True)
     for t in ["SPY", "TLT", "XLF", "XLI", "VIXY"]:
