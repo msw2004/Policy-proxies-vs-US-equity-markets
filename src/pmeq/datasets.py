@@ -89,8 +89,20 @@ def load_returns(tickers: list[str] | None = None) -> pd.DataFrame:
 
 
 def load_spy_monthly() -> pd.DataFrame:
-    """Monthly SPY closes (1993-02 onwards) indexed by month-end period."""
+    """Monthly SPY closes (1993-02 onwards) indexed by month-end period.
+
+    Release 2's long sample rests entirely on this series.  Like the daily bars it
+    is vendor data, so it is fetched rather than redistributed - and like them it
+    raises ``PriceDataMissing`` with the command to run, instead of a bare
+    ``FileNotFoundError`` from inside pandas.
+    """
     path = DATA_RAW / "prices" / "SPY_monthly.csv"
+    if not path.exists():
+        raise PriceDataMissing(
+            f"No monthly SPY snapshot at {path}.\n"
+            "Price bars are vendor data and are not redistributed with this repo.\n"
+            "Fetch them once with:  python -m pmeq.datasets refresh --prices-only"
+        )
     df = pd.read_csv(path, parse_dates=["date"]).sort_values("date")
     df["month"] = df["date"].dt.to_period("M")
     df = df.set_index("month")[["close", "adj_close"]]
@@ -253,16 +265,49 @@ def search_markets(query: str, limit: int = 20) -> pd.DataFrame:
     return out.sort_values("volume_usd", ascending=False) if len(out) else out
 
 
-def fetch_prices_yf(ticker: str, start: str = "2015-01-01") -> pd.DataFrame:
-    import yfinance as yf
+def _tidy_yf(df: pd.DataFrame) -> pd.DataFrame:
+    """Normalise a yfinance frame to this repo's column names.
 
-    df = yf.download(ticker, start=start, auto_adjust=False, progress=False)
+    Current yfinance returns MultiIndex columns ``(field, ticker)`` even for a
+    single ticker.  Left alone the rename below silently misses, ``to_csv`` writes
+    a three-line header, and ``load_prices`` then dies on a missing ``date``
+    column - during ``refresh``, which is the first thing a fresh clone runs.  The
+    explicit check turns a confusing downstream parse error into a clear one here.
+    """
+    if isinstance(df.columns, pd.MultiIndex):
+        df.columns = df.columns.get_level_values(0)
     df = df.rename(
         columns={"Open": "open", "High": "high", "Low": "low",
                  "Close": "close", "Adj Close": "adj_close", "Volume": "volume"}
     )
     df.index.name = "date"
+    missing = {"close", "adj_close"} - set(df.columns)
+    if missing:
+        raise RuntimeError(
+            f"yfinance returned unexpected columns {list(df.columns)}; "
+            f"missing {sorted(missing)}")
     return df
+
+
+def fetch_prices_yf(ticker: str, start: str = "2015-01-01") -> pd.DataFrame:
+    import yfinance as yf
+
+    return _tidy_yf(
+        yf.download(ticker, start=start, auto_adjust=False, progress=False))
+
+
+def fetch_spy_monthly_yf(start: str = "1993-01-01") -> pd.DataFrame:
+    """Monthly SPY closes back to inception - the long sample Release 2 runs on.
+
+    Without this, ``refresh`` leaves ``SPY_monthly.csv`` unwritten, the file is
+    gitignored along with the daily bars, and Release 2 cannot run on a fresh
+    clone at all.
+    """
+    import yfinance as yf
+
+    df = _tidy_yf(yf.download(
+        "SPY", start=start, interval="1mo", auto_adjust=False, progress=False))
+    return df[["close", "adj_close"]].dropna()
 
 
 def fetch_epu_daily_live() -> pd.Series:
@@ -328,6 +373,9 @@ def refresh(outdir: Path = DATA_RAW, prices_only: bool = False) -> None:
         px = fetch_prices_yf(t)
         px.to_csv(outdir / "prices" / f"{t}.csv")
         print(f"  prices/{t}: {len(px)} bars")
+    spym = fetch_spy_monthly_yf()
+    spym.to_csv(outdir / "prices" / "SPY_monthly.csv")
+    print(f"  prices/SPY_monthly: {len(spym)} months")
     print("refresh complete")
 
 

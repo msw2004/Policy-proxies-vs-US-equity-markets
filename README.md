@@ -49,12 +49,12 @@ one-year window is the main constraint on the analysis.
 
 | Contract | Asset | n | corr | β | t (OLS) | t (HC3) | p, FDR |
 |---|---|--:|--:|--:|--:|--:|--:|
-| Sept-2026 +25bp | VIXY | 75 | 0.293 | 0.147 | 2.62 | 3.84 | 0.002 |
-| Sept-2026 +25bp | SPY | 75 | −0.307 | −0.046 | −2.76 | −3.76 | 0.002 |
-| Sept-2026 no change | SPY | 74 | 0.266 | 0.036 | 2.34 | 3.29 | 0.009 |
-| US recession 2026 | XLI | 202 | −0.211 | −0.124 | −3.05 | −2.65 | 0.041 |
-| Fed hike 2026 | VIXY | 162 | 0.233 | 0.182 | 3.02 | 2.64 | 0.041 |
-| Sept-2026 no change | VIXY | 74 | −0.220 | −0.098 | −1.91 | −2.58 | 0.041 |
+| Sept-2026 +25bp | VIXY | 75 | 0.293 | 0.147 | 2.62 | 3.84 | 0.004 |
+| Sept-2026 +25bp | SPY | 75 | −0.307 | −0.046 | −2.76 | −3.76 | 0.004 |
+| Sept-2026 no change | SPY | 74 | 0.266 | 0.036 | 2.34 | 3.29 | 0.013 |
+| US recession 2026 | XLI | 202 | −0.211 | −0.124 | −3.05 | −2.65 | 0.046 |
+| Fed hike 2026 | VIXY | 162 | 0.233 | 0.182 | 3.02 | 2.64 | 0.046 |
+| Sept-2026 no change | VIXY | 74 | −0.220 | −0.098 | −1.91 | −2.58 | 0.049 |
 
 After Benjamini-Hochberg correction at 10%, 12 of the 25 pairs are significant. When
 the odds of a rate increase rise, equities and long bonds fall while implied
