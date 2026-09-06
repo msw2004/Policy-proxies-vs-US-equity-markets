@@ -1,50 +1,50 @@
 # Prediction markets, policy news, and US equities
 
-A four-part study of quantitative proxies for public views on US fiscal, monetary, and
-trade policy, tested against US equity outcomes under one specification.
+A four-part study tests quantitative proxies for public views on US fiscal, monetary,
+and trade policy against US equity outcomes under a common specification.
 
-- **Release 1** compares Polymarket implied probabilities with US equity and rates ETFs
+- Release 1 compares Polymarket implied probabilities with US equity and rates ETFs
   over 250 trading days.
-- **Release 2** applies the same tests to the Baker, Bloom, and Davis news-based
+- Release 2 applies the same tests to the Baker, Bloom, and Davis news-based
   Economic Policy Uncertainty index and its categorical sub-indices, on both the Release
-  1 window and the full 1993–2026 sample.
-- **Release 3** converts raw probabilities into interpretable factors, combines them in
+  1 window and the full sample from 1993 to 2026.
+- Release 3 converts raw probabilities into interpretable factors, combines them in
   a composite policy uncertainty index, and tests whether it improves volatility
   forecasts.
-- **Release 4** puts the same specification on 390 months of the Baker, Bloom, Davis and
-  Kost Equity Market Volatility tracker, where the sample is long enough for the
-  question to be answerable.
+- Release 4 applies the specification to 390 months of the Baker, Bloom, Davis, and Kost
+  Equity Market Volatility tracker. It provides a much longer estimation window than
+  the 159-trading-day sample in Release 3.
 
 ## What the study found
 
-**One real effect, and it is not usable.** Release 4 identifies a robust association
-between month-*t* policy-news intensity and month-*t+1* absolute return — ΔR² = 5.96%
-over an autoregressive volatility baseline, confirmed out of sample at +7.7% OOS R².
-It does not survive the publication lag: the index is not released until several days
-into the target month, and at the lag a person could actually have traded, the
-out-of-sample gain is +0.04%.
+Release 4 identifies an association between policy-news intensity in month *t* and
+absolute return in month *t+1*. The signal adds 0.0596, or 5.96 percentage points, to
+R² over an autoregressive volatility baseline and produces an out-of-sample R² of
++7.7% at lag 0. It is not available at the start of the forecast month, however. The
+index is published several days into month *t+1*, and the out-of-sample gain falls to
++0.04% under a conservative whole-month availability lag.
 
-Everything else is null, and the nulls are the substance:
+The earlier releases place substantial limits on their findings:
 
-- Release 1 finds same-day co-movement in the directions theory predicts, but the daily
-  data cannot establish which market moves first — prediction-market bars are stamped
-  after the equity close, and 38% of the event-study move lands before the probability
-  jumps.
-- Release 2 finds nothing on Release 1's eleven months and eleven significant
-  relationships over 400. The binding constraint is sample length, not the proxy.
-- Release 3 finds nothing. Its first version reported a strong result that turned out to
-  be a shared time trend, validated by a placebo a deterministic ramp also passes, on an
-  uncorrected grid, from an aggregate that is 82% one contract.
+- Release 1 finds same-day co-movement in the directions predicted by theory, but the
+  daily data cannot establish which market moves first. Prediction market bars are
+  stamped after the equity close, and 38% of the event-study move occurs before the
+  recorded probability jumps.
+- Release 2 finds no significant relationships in Release 1's eleven-month window, but
+  eleven survive correction in the full 400-month sample. This contrast points to
+  sample length rather than proxy choice as the main constraint.
+- Release 3 finds no adjusted forecasting relationship. Its first version reported a
+  strong result, but the signal was a shared time trend. The placebo also accepted a
+  deterministic ramp, the grid had no multiplicity correction, and one contract
+  supplied 82% of the aggregate weight.
 
-## On the numbers below
+## Independent checks
 
-Every quantitative claim in this repository was recomputed independently by an
-adversarial review before publication. **Those reviews overturned a headline result in
-Releases 2, 3 and 4** — the comparison window, the trend control, and the publication
-lag respectively. Where a number differs from an earlier draft, the section says which
-was wrong and why. The corrections are documented rather than quietly applied, because
-in every case the defective version produced the more impressive result, and that
-pattern is the most portable thing here.
+An independent review recomputed every quantitative claim before publication. Those
+checks changed a headline conclusion in Releases 2, 3, and 4. The
+problems involved the comparison window, trend control, and publication lag,
+respectively. Each affected section explains the correction. The earlier versions are
+also documented because every error made the result appear stronger.
 
 ---
 
@@ -75,7 +75,10 @@ one-year window is the main constraint on the analysis.
 
 ## Results
 
-### 1. Same-day co-movement
+### 1. Selected same-day co-movement results
+
+The table shows six significant pairs. The complete 25-cell grid is available in the
+output tables.
 
 | Contract | Asset | n | corr | β | t (OLS) | t (HC3) | p, FDR |
 |---|---|--:|--:|--:|--:|--:|--:|
@@ -106,8 +109,8 @@ problems limit what those tests can tell us:
 - In the event study, an average of 38% of the cumulative abnormal move occurs before
   the recorded probability jump.
 
-Release 1 supports a claim of same-day co-movement. It does not support a claim about
-direction. That would require intraday data.
+Release 1 establishes same-day co-movement, but direction cannot be tested without
+intraday data.
 
 ### 3. Event study results are descriptive
 
@@ -149,9 +152,10 @@ three categorical sub-indices that FRED publishes, `EPUMONETARY`, `EPUTRADE`, an
 `EPUSOVDEBT`.
 
 Each of the seven Release 1 contracts is mapped to a theme and, where one exists, to a
-categorical index. Two themes have no published counterpart. The recession and
-government shutdown markets have no matching sub-index, which the mapping table records
-as `(none published)` rather than silently reassigning them.
+categorical index. Two themes have no published counterpart. The primary mapping
+records the recession and government shutdown markets as `(none published)`. The
+descriptive comparison below also reports the shutdown market against the configured
+`EPUSOVDEBT` comparator. It is not a published shutdown-specific index.
 
 ## Results
 
@@ -165,9 +169,9 @@ refresh` downloads the file and the code detects it automatically.
 
 ### 2. No adjusted associations in the Release 1 window
 
-Restricted to the months Release 1 estimates on, 24 of the 40 regression cells are even
-estimable, the largest sample is 11 months, and no cell survives FDR correction at 10%.
-The largest absolute t-statistic is 2.64.
+Restricting the analysis to the months used in Release 1 leaves 24 estimable cells out
+of 40. The largest sample contains 11 months, no cell survives FDR correction at 10%,
+and the largest absolute t-statistic is 2.64.
 
 The window is defined as the span of the price panel, which is what Release 1 actually
 estimates on. It is not the union of the contracts' quote dates. That union starts
@@ -176,6 +180,8 @@ it from the correlation work, so using it would compare against months Release 1
 sees.
 
 ### 3. Full-sample associations
+
+Selected rows from the complete 40-cell grid are shown below.
 
 | Target | Regressor | n | β | t (HAC) | R² |
 |---|---|--:|--:|--:|--:|
@@ -258,7 +264,7 @@ than the corrected result.
 `agg_entropy` correlates +0.84 with elapsed time over the selected window and fails an
 ADF test. The volatility baseline contains trailing realised volatility, VIXY, and
 absolute return, but no time trend. The index was therefore capturing drift that the
-baseline did not model. Adding a linear time index removes 94% to 100% of the apparent
+baseline did not model. Adding a linear time index removes 85% to 100% of the apparent
 incremental R²:
 
 | Horizon | Signal | ΔR² without trend | ΔR² with trend | share from trend | t without | t with |
@@ -345,42 +351,43 @@ verdict for each.
 
 ---
 
-# Release 4: the long sample, and what it costs to be usable
+# Release 4: the long sample and implementability
 
-Releases 1 to 3 all end in the same place: the window is too short to answer the
-question. Release 4 removes that constraint. The Baker, Bloom, Davis and Kost Equity
-Market Volatility tracker is a newspaper-based measure of volatility-relevant news
-flow, published monthly with policy-specific components, and it gives **390 usable
-months** against Release 3's 159 trading days.
+The prediction market analyses in Releases 1 and 3 rely on short windows, and Release 2
+shows how strongly sample length affects detection. Release 4 uses the Baker, Bloom,
+Davis, and Kost Equity Market Volatility tracker. EMV is a newspaper-based measure of
+volatility-related news flow, published monthly with policy-specific components. It
+provides 390 usable months, compared with 159 trading days in Release 3.
 
-The specification keeps the same shape as Release 3 — a persistent uncertainty index, an
-autoregressive volatility baseline to beat, HAC errors, a circular-shift placebo — so a
-difference in verdict is attributable to power rather than to a change of model. Every
-correction Release 3 needed is applied here from the start: a linear trend in the
-baseline, an exactly enumerated placebo, BH-FDR across the grid, a bandwidth floored at
-the target's overlap, and a stationarity verdict for every signal, target and control.
+Release 4 keeps the testing architecture similar to Release 3: a persistent uncertainty
+index, an autoregressive volatility baseline, HAC errors, and a circular-shift placebo.
+It also includes the corrections identified in Release 3: a linear trend, an exact
+placebo, BH-FDR, an overlap-aware bandwidth, and stationarity checks. The statistical
+association and the availability test are reported separately.
 
-**There is a real effect here, and it is not usable.** Those are two separate findings
-and the release reports both.
+## Trend-control comparison
 
-## The trend control, as a control
-
-Release 3's result was a shared time trend. Running the same decomposition here is how
-we know that was a short-window artefact rather than a property of news-based measures:
+Release 3's initial result came from a shared time trend. Applying the same decomposition
+to EMV tests whether that problem is specific to the short window or common to
+news-based measures:
 
 | Signal | corr with elapsed time | ΔR² without trend | ΔR² with trend |
 |---|--:|--:|--:|
 | log EMV overall | −0.005 | 0.0599 | 0.0596 |
 | log EMV monetary | +0.019 | 0.0578 | 0.0578 |
-| Release 3's `agg_entropy` | **+0.84** | 0.0886 | **0.0049** |
+| Release 3's `agg_entropy` | +0.84 | 0.0886 | 0.0049 |
 
-Over 390 months the EMV series are stationary and trendless, and the control removes
-essentially nothing. Over eight months Release 3's index was almost pure drift.
+Across 390 months, the stationarity tests do not flag the EMV series, and their
+correlations with elapsed time are close to zero. Adding the trend changes their
+incremental R² little. By comparison, the Release 3 index was strongly affected by
+drift in its eight-month window.
 
-## The effect
+## Forecast association
 
-Over a baseline of trailing 12-month realised volatility, |return| and a trend, log EMV
-overall adds **ΔR² = 5.96%** to a forecast of next month's |SPY return|:
+Relative to a baseline containing trailing 12-month realised volatility, absolute
+return, and a trend, log EMV overall adds 0.0596, or 5.96 percentage points, to R² when
+forecasting next month's absolute SPY return. Selected rows from the 18-cell grid are
+shown below:
 
 | Target | Signal | n | ΔR² | t (HAC) | placebo p | FDR p |
 |---|---|--:|--:|--:|--:|--:|
@@ -391,26 +398,30 @@ overall adds **ΔR² = 5.96%** to a forecast of next month's |SPY return|:
 | forward 12m vol (log) | EMV overall | 379 | 0.0619 | 3.91 | 0.1192 | 0.3065 |
 | next month \|return\| | EMV trade | 390 | 0.0022 | 1.06 | 0.3598 | 0.4317 |
 
-Five of eighteen cells survive FDR at 10%; four of twelve forward-looking ones.
+Five of eighteen cells survive FDR at 10%. Four of the twelve forward-looking cells
+survive.
 
-The placebo p of 0.0028 is 1/353 — no shift out of 352 beat the observed increment. That
-is the floor of the design, so it is worth checking the gap is real rather than a
-resolution artefact: the null has mean 0.0033 and a **maximum of 0.0317**, against an
-observed 0.0596. The observed value is 13.6 standard deviations above the null mean and
-nearly twice the largest value the null ever reaches.
+The placebo p-value of 0.0028 is 1/353. None of the 352 shifted series exceeds the
+observed increment. Because this p-value is the design's lower limit, the distance from
+the null is also reported. The null has a mean of 0.0033 and a maximum of 0.0317,
+compared with an observed value of 0.0596. The observation is 13.6 standard deviations
+above the null mean and nearly twice its maximum.
 
-It also survives everything that broke the earlier releases. The bandwidth is irrelevant
-(t = 4.26 / 4.27 / 4.05 / 3.98 / 3.96 at 1, 5, 10, 20, 30 lags, because the target has no
-overlap). A richer AR baseline does not absorb it (adding eleven lags of |return| leaves
-ΔR² = 0.050, t = 3.63). It holds in both halves (1994–2009: t = 2.94; 2010–2026:
-t = 3.27). And roughly half of it comes from high-volatility months — dropping the top 5%
-by |return| leaves ΔR² = 0.033, t = 3.65 — which is a dependence worth stating, but it
-survives every cut including winsorising.
+### Robustness checks
 
-## It is one finding, not four
+The estimate is stable across alternative bandwidths, autoregressive controls, sample
+splits, outlier removal, and winsorising. Changing the bandwidth gives t-statistics of
+4.26, 4.27, 4.05, 3.98, and 3.96 at 1, 5, 10, 20, and 30 lags; the target has no
+overlap. Adding eleven lags of |return| to the autoregressive baseline leaves ΔR² =
+0.050 and t = 3.63. The association appears in both halves of the sample, with t = 2.94
+from 1994 to 2009 and t = 3.27 from 2010 to 2026. High-volatility months account for
+roughly half of the increment. Removing the top 5% of months by absolute return leaves
+ΔR² = 0.033 and t = 3.65, and the result also remains after winsorising.
 
-Four cells clear the FDR screen, which reads as four results. Conditioning each on the
-others:
+## Overlap among the significant signals
+
+Four forward-looking cells clear the FDR screen, but their regressors overlap
+substantially. The table below conditions each signal on the others:
 
 | Signal | ΔR² alone | t alone | ΔR² given the others | t given the others |
 |---|--:|--:|--:|--:|
@@ -419,59 +430,60 @@ others:
 | EMV trade | 0.0022 | 1.06 | 0.0060 | −1.80 |
 | EPU headline | 0.0210 | 3.12 | 0.0029 | 1.36 |
 
-None of them stands up once the others are present. EMV overall and EMV monetary
-correlate 0.75; the "policy pair" is EMV monetary plus a regressor that adds
-ΔR² = 0.00005 (t = −0.18); headline EPU adds nothing once EMV overall is in. The four
-cells are one effect, and an FDR grid that treats them as separate discoveries counts it
-four times.
+None remains significant once the other signals are included. EMV overall and EMV
+monetary correlate 0.75. The "policy pair" consists of EMV monetary plus a regressor
+that adds ΔR² = 0.00005 (t = −0.18), and headline EPU adds little after controlling for
+EMV overall. The four cells should therefore be read as repeated measurements of one
+association rather than four independent findings.
 
-Headline EPU should be discounted further. It is a unit root on this sample (ADF
-p = 0.18, KPSS p = 0.01) correlating +0.65 with elapsed time, and its increment **more
-than doubles** when the trend control is added (0.0091 → 0.0210) — the signature of a
-regressor entangled with a drift, not of robustness. The circular-shift placebo is also
-anti-conservative against stochastic trends specifically, so its nominal p understates
-the true size for exactly this cell.
+The headline EPU estimate is less reliable. Its ADF and KPSS results are consistent with
+nonstationarity (ADF p = 0.18, KPSS p = 0.01), and it correlates +0.65 with elapsed
+time. Its increment more than doubles when the trend control is added, from 0.0091 to
+0.0210, suggesting that the estimate depends on drift. The circular-shift placebo is
+also anti-conservative for stochastic trends, so the nominal p-value for this cell may
+be too small.
 
-## And it is not implementable
+## Publication lag and implementability
 
 EMV for month *t* is built from newspapers dated within *t*, so there is no look-ahead in
-the strict sense. But the index is not **released** until several days into month *t+1*,
-by which time part of the target month has already happened. A forecast that needs a
-number nobody has yet is not a forecast.
+the strict sense. However, the index is not released until several days into month
+*t+1*, after part of the target month has passed. The lag-0 specification therefore
+uses a value that would not have been available when the forecast was made.
 
-The conservative bound is to use month *t−1*'s EMV to predict month *t+1*. The effect
-decays with roughly a one-month half-life, so the bound is not close:
+A conservative implementation uses EMV from month *t−1* to predict month *t+1*. The
+increment falls sharply at the first lag and continues to decline at longer lags:
 
 | Signal lag | Implementable | ΔR² | t | placebo p | share of lag-0 retained |
 |--:|:--|--:|--:|--:|--:|
 | 0 | no | 0.0596 | 4.27 | 0.0028 | 100% |
-| **1** | **yes** | **0.0183** | **2.63** | **0.0142** | **31%** |
-| 2 | yes | 0.0055 | 1.49 | — | 9% |
-| 3 | yes | 0.0040 | 1.15 | — | 7% |
+| 1 | yes | 0.0183 | 2.63 | 0.0142 | 31% |
+| 2 | yes | 0.0055 | 1.49 | not computed | 9% |
+| 3 | yes | 0.0040 | 1.15 | not computed | 7% |
 
-EMV monetary and headline EPU do not survive the lag at all (t falls to 1.61 and 0.79).
+At lag 1, the t-statistics for EMV monetary and headline EPU fall to 1.61 and 0.79.
 
-The out-of-sample test settles it. This is the only genuine out-of-sample exercise in the
-study — 270 expanding-window, one-step-ahead forecasts, scored as
-1 − SSE(full)/SSE(baseline):
+This is the study's only out-of-sample evaluation. It contains 270
+expanding-window, one-step-ahead forecasts, scored as
+`1 − SSE(full)/SSE(baseline)`:
 
 | Signal | Lag | OOS R² | Diebold-Mariano t |
 |---|--:|--:|--:|
-| EMV overall | 0 | **+7.7%** | 1.85 |
-| EMV overall | **1** | **+0.04%** | **0.02** |
+| EMV overall | 0 | +7.7% | 1.85 |
+| EMV overall | 1 | +0.04% | 0.02 |
 | EMV monetary | 0 | +7.5% | 2.74 |
 | EMV monetary | 1 | −0.6% | −0.45 |
 
-In sample and out of sample agree at lag 0, which is what makes the lag decisive rather
-than a quibble. At the lag a person could actually have traded, the signal earns nothing.
+At lag 0, the in-sample and out-of-sample estimates point in the same direction,
+although the Diebold-Mariano t-statistic is 1.85. Under the conservative availability
+lag, out-of-sample R² falls to +0.04%. Release 4 therefore supports an EMV-based
+association at lag 0 but finds almost no usable predictive improvement once publication
+timing is imposed. A real-time vintage is needed to test the signal that was available
+on each historical release date.
 
-**The honest claim: one EMV-based association between month-*t* policy-news intensity and
-month-*t+1* absolute return, robust in sample and out, and worth about nothing once you
-wait for the index to be published.**
+## Power comparison with Release 3
 
-## What Release 3 could have seen
-
-Given the effect sizes the long sample identifies, Release 3's window had:
+Using the effect sizes estimated in the long sample, the power analysis for Release 3
+gives:
 
 | | Release 3's n |
 |---|--:|
@@ -482,29 +494,31 @@ Given the effect sizes the long sample identifies, Release 3's window had:
 | power against Release 3's own FDR screen | 0.69 |
 | n needed for 80% power | 120 |
 
-So Release 3's null was not strong evidence of absence: against an EMV-sized effect it
-had a bit better than a coin flip once autocorrelation is accounted for. Two caveats,
-both of which cut against this comparison rather than for it. The effect sizes are the
-ones that *survived* on the long sample, so they are biased upward and this power is
-optimistic. And assuming a monthly news-based effect transfers to a daily
-prediction-market signal on a different target is a strong assumption — only the
-"n needed" column is free of it.
+Release 3's null is therefore weak evidence of absence. After accounting for
+autocorrelation, its estimated power against an EMV-sized association is 0.58. This
+comparison is optimistic for two reasons. First, it uses associations selected for
+surviving the long-sample analysis, so their estimated sizes are likely biased upward.
+Second, it assumes that a monthly news-based association transfers to a daily
+prediction market signal with a different target. The reported sample size needed for
+80% power is conditional on the assumed effect size and does not establish that such a
+transfer is valid.
 
-## Caveats specific to this release
+## Release 4 limitations
 
-- **The estimation sample starts in 1994, not 1985.** EMV runs from 1985-01, but SPY
-  monthly data begins 1993-02 and the 12-month volatility control costs another year, so
-  roughly 110 months of available EMV data are discarded. A longer equity series would
-  recover them.
-- **Quarter-samples are uneven**: 1994–2001 t = 0.58, 2002–2009 t = 3.39, 2010–2017
-  t = 6.50, 2018–2026 t = 1.33. The halves both work; the quarters say the effect is
-  concentrated in the middle two decades.
-- **The largest increments in the release are contemporaneous, not forecasts.** Trailing
-  12-month volatility gives ΔR² up to 0.119, and it is excluded from every cross-release
-  comparison for that reason.
-- **`log_EPUTRADE` is also a unit root** (ADF p = 0.17, KPSS p = 0.02), and `log_rv12` —
-  which appears in almost every baseline — is ambiguous (ADF p = 0.07). The stationarity
-  table reports all of them.
+- The estimation sample starts in 1994 even though EMV begins in 1985-01. Monthly SPY
+  data start in 1993-02, and the 12-month volatility control requires another year of
+  observations. This removes about 110 months of available EMV data. A longer equity
+  series would recover them.
+- Results vary across quarter-samples. The t-statistics are 0.58 from 1994 to 2001, 3.39
+  from 2002 to 2009, 6.50 from 2010 to 2017, and 1.33 from 2018 to 2026. Both half-sample
+  estimates are positive, but the quarter-samples place most of the association in the
+  middle two periods.
+- The largest incremental R² values in the release are contemporaneous rather than
+  predictive. Trailing 12-month volatility produces values as high as 0.119, so these
+  cells are excluded from every cross-release comparison.
+- The ADF and KPSS results for `log_EPUTRADE` are consistent with nonstationarity (ADF
+  p = 0.17, KPSS p = 0.02). Results for `log_rv12`, which appears in almost every
+  baseline, are ambiguous (ADF p = 0.07). The stationarity table reports each result.
 
 ---
 
@@ -647,21 +661,22 @@ again. `datasets.py` and `stats_tools.py` are shared across all four releases.
   different constant selects a different panel and reverses two signs.
 - Release 3's composite is 82% one contract by volume weight, so "aggregate across
   policy domains" overstates what it measures.
-- Releases 1 to 3 run no out-of-sample test; the placebo and trend control stand in for
-  one. Release 4 does run one, and it is what settles that release.
-- Release 4's publication-lag result uses a reconstructed lag, not a real-time vintage
-  of the index. It is the conservative bound rather than a measurement.
+- Releases 1 to 3 have no out-of-sample evaluation. Their placebo and trend controls do
+  not replace a holdout test. Release 4 includes the study's only out-of-sample test.
+- Release 4 reconstructs a conservative publication lag rather than using a real-time
+  vintage of the index. It provides a bound, not a direct measurement of the signal
+  available on each historical release date.
 
-## What would move this forward
+## Data needed for follow-up work
 
-- **Intraday prediction-market data.** Release 1's direction question is unanswerable at
-  daily frequency and would be straightforward with timestamps.
-- **A real-time vintage of the EMV tracker**, to settle whether any part of the effect
-  is capturable rather than bounding it.
-- **A longer equity series.** Release 4 discards ~110 months of available EMV data
-  because SPY monthly data starts in 1993.
-- **The daily EPU index**, which the build environment could not retrieve and which is
-  the one strand of the original brief left unfinished.
+- Intraday prediction market data would allow Release 1 to test direction with actual
+  timestamps rather than daily bars.
+- A real-time vintage of the EMV tracker would show whether any part of the association
+  was available between the historical publication date and month-end.
+- A longer equity series would recover about 110 months of EMV data that Release 4
+  loses because monthly SPY data begin in 1993.
+- The daily EPU index would complete the one part of the original brief that the build
+  environment could not retrieve.
 
 ## License
 
